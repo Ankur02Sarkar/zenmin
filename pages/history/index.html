@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>History</title>
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="history.css" />
+    <link rel="stylesheet" href="../../ext/icons/iconfont.css" />
+    <link rel="stylesheet" href="../pagebase.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1 data-string="specialPageHistory">History</h1>
+      <div class="search-container">
+        <input
+          type="text"
+          id="search-input"
+          data-string="searchHistory"
+          placeholder="Search history..."
+        />
+      </div>
+    </div>
+    <div class="content" id="history-container">
+      <div class="history-list" id="history-list"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <span data-string="historyEmpty">No history yet.</span>
+      </div>
+      <div class="loading-state" id="loading-state">
+        <span>Loading...</span>
+      </div>
+    </div>
+    <script src="../../js/util/settings/settingsPreload.js"></script>
+    <script src="../../dist/localization.build.js"></script>
+    <script src="history.js"></script>
+  </body>
+</html>

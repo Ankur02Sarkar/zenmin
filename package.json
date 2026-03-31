@@ -1,8 +1,8 @@
 {
-  "name": "min",
-  "productName": "Min",
-  "author": "PalmerAL",
-  "version": "1.35.4",
+  "name": "zenmin",
+  "productName": "ZenMin",
+  "author": "Ankur Sarkar",
+  "version": "1.0.0",
   "description": "A fast, minimal browser that protects your privacy",
   "electronVersion": "40.6.1",
   "main": "main.build.js",
