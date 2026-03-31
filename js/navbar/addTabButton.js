@@ -1,11 +1,11 @@
-var browserUI = require('browserUI.js')
+var browserUI = require("browserUI.js");
 
-var addTabButton = document.getElementById('add-tab-button')
+var addTabButton = document.getElementById("add-tab-button");
 
-function initialize () {
-  addTabButton.addEventListener('click', function (e) {
-    browserUI.addTab()
-  })
+function initialize() {
+    addTabButton.addEventListener("click", (e) => {
+        browserUI.addTab();
+    });
 }
 
-module.exports = { initialize }
+module.exports = { initialize };

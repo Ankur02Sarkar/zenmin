@@ -1,137 +1,167 @@
-var webviews = require('webviews.js')
-var keybindings = require('keybindings.js')
-var PDFViewer = require('pdfViewer.js')
+var webviews = require("webviews.js");
+var keybindings = require("keybindings.js");
+var PDFViewer = require("pdfViewer.js");
 
 var findinpage = {
-  container: document.getElementById('findinpage-bar'),
-  input: document.getElementById('findinpage-input'),
-  counter: document.getElementById('findinpage-count'),
-  previous: document.getElementById('findinpage-previous-match'),
-  next: document.getElementById('findinpage-next-match'),
-  endButton: document.getElementById('findinpage-end'),
-  activeTab: null,
-  start: function (options) {
-    webviews.releaseFocus()
+    container: document.getElementById("findinpage-bar"),
+    input: document.getElementById("findinpage-input"),
+    counter: document.getElementById("findinpage-count"),
+    previous: document.getElementById("findinpage-previous-match"),
+    next: document.getElementById("findinpage-next-match"),
+    endButton: document.getElementById("findinpage-end"),
+    activeTab: null,
+    start: (options) => {
+        webviews.releaseFocus();
 
-    findinpage.input.placeholder = l('searchInPage')
+        findinpage.input.placeholder = l("searchInPage");
 
-    findinpage.activeTab = tabs.getSelected()
+        findinpage.activeTab = tabs.getSelected();
 
-    /* special case for PDF viewer */
+        /* special case for PDF viewer */
 
-    if (PDFViewer.isPDFViewer(findinpage.activeTab)) {
-      PDFViewer.startFindInPage(findinpage.activeTab)
-    }
+        if (PDFViewer.isPDFViewer(findinpage.activeTab)) {
+            PDFViewer.startFindInPage(findinpage.activeTab);
+        }
 
-    findinpage.counter.textContent = ''
-    findinpage.container.hidden = false
-    findinpage.input.focus()
-    findinpage.input.select()
+        findinpage.counter.textContent = "";
+        findinpage.container.hidden = false;
+        findinpage.input.focus();
+        findinpage.input.select();
 
-    if (findinpage.input.value) {
-      webviews.callAsync(findinpage.activeTab, 'findInPage', findinpage.input.value)
-    }
-  },
-  end: function (options) {
-    options = options || {}
-    var action = options.action || 'keepSelection'
+        if (findinpage.input.value) {
+            webviews.callAsync(
+                findinpage.activeTab,
+                "findInPage",
+                findinpage.input.value,
+            );
+        }
+    },
+    end: (options) => {
+        options = options || {};
+        var action = options.action || "keepSelection";
 
-    findinpage.container.hidden = true
+        findinpage.container.hidden = true;
 
-    if (findinpage.activeTab) {
-      webviews.callAsync(findinpage.activeTab, 'stopFindInPage', action)
+        if (findinpage.activeTab) {
+            webviews.callAsync(findinpage.activeTab, "stopFindInPage", action);
 
-      /* special case for PDF viewer */
-      if (tabs.get(findinpage.activeTab) && PDFViewer.isPDFViewer(findinpage.activeTab)) {
-        PDFViewer.endFindInPage(findinpage.activeTab)
-      }
+            /* special case for PDF viewer */
+            if (
+                tabs.get(findinpage.activeTab) &&
+                PDFViewer.isPDFViewer(findinpage.activeTab)
+            ) {
+                PDFViewer.endFindInPage(findinpage.activeTab);
+            }
 
-      webviews.callAsync(findinpage.activeTab, 'focus')
-    }
+            webviews.callAsync(findinpage.activeTab, "focus");
+        }
 
-    findinpage.activeTab = null
-  }
-}
+        findinpage.activeTab = null;
+    },
+};
 
-findinpage.input.addEventListener('click', function () {
-  webviews.releaseFocus()
-})
+findinpage.input.addEventListener("click", () => {
+    webviews.releaseFocus();
+});
 
-findinpage.endButton.addEventListener('click', function () {
-  findinpage.end()
-})
+findinpage.endButton.addEventListener("click", () => {
+    findinpage.end();
+});
 
-findinpage.input.addEventListener('input', function (e) {
-  if (this.value) {
-    webviews.callAsync(findinpage.activeTab, 'findInPage', findinpage.input.value)
-  } else {
-    webviews.callAsync(findinpage.activeTab, 'stopFindInPage', 'clearSelection')
-    findinpage.counter.textContent = ''
-  }
-})
-
-findinpage.input.addEventListener('keypress', function (e) {
-  if (e.keyCode === 13) { // Return/Enter key
-    webviews.callAsync(findinpage.activeTab, 'findInPage', [findinpage.input.value, {
-      forward: !e.shiftKey, // find previous if Shift is pressed
-      findNext: false
-    }])
-  }
-})
-
-findinpage.previous.addEventListener('click', function (e) {
-  webviews.callAsync(findinpage.activeTab, 'findInPage', [findinpage.input.value, {
-    forward: false,
-    findNext: false
-  }])
-  findinpage.input.focus()
-})
-
-findinpage.next.addEventListener('click', function (e) {
-  webviews.callAsync(findinpage.activeTab, 'findInPage', [findinpage.input.value, {
-    forward: true,
-    findNext: false
-  }])
-  findinpage.input.focus()
-})
-
-webviews.bindEvent('view-hidden', function (tabId) {
-  if (tabId === findinpage.activeTab) {
-    findinpage.end()
-  }
-})
-
-tasks.on('tab-selected', function (tabId) {
-  if (tabId !== findinpage.activeTab) {
-    findinpage.end()
-  }
-})
-
-webviews.bindEvent('did-start-navigation', function (tabId, url, isInPlace, isMainFrame, frameProcessId, frameRoutingId) {
-  if (isMainFrame && !isInPlace && tabId === findinpage.activeTab) {
-    findinpage.end()
-  }
-})
-
-webviews.bindEvent('found-in-page', function (tabId, data) {
-  if (data.matches !== undefined) {
-    var text
-    if (data.matches === 1) {
-      text = l('findMatchesSingular')
+findinpage.input.addEventListener("input", function (e) {
+    if (this.value) {
+        webviews.callAsync(
+            findinpage.activeTab,
+            "findInPage",
+            findinpage.input.value,
+        );
     } else {
-      text = l('findMatchesPlural')
+        webviews.callAsync(
+            findinpage.activeTab,
+            "stopFindInPage",
+            "clearSelection",
+        );
+        findinpage.counter.textContent = "";
     }
+});
 
-    findinpage.counter.textContent = text.replace('%i', data.activeMatchOrdinal).replace('%t', data.matches)
-  }
-})
+findinpage.input.addEventListener("keypress", (e) => {
+    if (e.keyCode === 13) {
+        // Return/Enter key
+        webviews.callAsync(findinpage.activeTab, "findInPage", [
+            findinpage.input.value,
+            {
+                forward: !e.shiftKey, // find previous if Shift is pressed
+                findNext: false,
+            },
+        ]);
+    }
+});
 
-keybindings.defineShortcut('followLink', function () {
-  findinpage.end({ action: 'activateSelection' })
-})
+findinpage.previous.addEventListener("click", (e) => {
+    webviews.callAsync(findinpage.activeTab, "findInPage", [
+        findinpage.input.value,
+        {
+            forward: false,
+            findNext: false,
+        },
+    ]);
+    findinpage.input.focus();
+});
 
-keybindings.defineShortcut({ keys: 'esc' }, function (e) {
-  findinpage.end()
-})
+findinpage.next.addEventListener("click", (e) => {
+    webviews.callAsync(findinpage.activeTab, "findInPage", [
+        findinpage.input.value,
+        {
+            forward: true,
+            findNext: false,
+        },
+    ]);
+    findinpage.input.focus();
+});
 
-module.exports = findinpage
+webviews.bindEvent("view-hidden", (tabId) => {
+    if (tabId === findinpage.activeTab) {
+        findinpage.end();
+    }
+});
+
+tasks.on("tab-selected", (tabId) => {
+    if (tabId !== findinpage.activeTab) {
+        findinpage.end();
+    }
+});
+
+webviews.bindEvent(
+    "did-start-navigation",
+    (tabId, url, isInPlace, isMainFrame, frameProcessId, frameRoutingId) => {
+        if (isMainFrame && !isInPlace && tabId === findinpage.activeTab) {
+            findinpage.end();
+        }
+    },
+);
+
+webviews.bindEvent("found-in-page", (tabId, data) => {
+    if (data.matches !== undefined) {
+        var text;
+        if (data.matches === 1) {
+            text = l("findMatchesSingular");
+        } else {
+            text = l("findMatchesPlural");
+        }
+
+        findinpage.counter.textContent = text
+            .replace("%i", data.activeMatchOrdinal)
+            .replace("%t", data.matches);
+    }
+});
+
+keybindings.defineShortcut("followLink", () => {
+    findinpage.end({ action: "activateSelection" });
+});
+
+keybindings.defineShortcut({ keys: "esc" }, (e) => {
+    findinpage.end();
+});
+
+module.exports = findinpage;
