@@ -211,6 +211,20 @@ const tabBar = {
             iconArea.appendChild(insecureIcon);
         }
     },
+    updateGroupLabel: () => {
+        var groupLabel = document.getElementById("group-label");
+        var groupDot = document.getElementById("group-color-dot");
+        var groupText = document.getElementById("group-name-text");
+        if (!groupLabel || !tasks.getSelected()) return;
+
+        var task = tasks.getSelected();
+        var color = task.color || "#4285f4";
+        var name = task.name || "Group " + (tasks.getIndex(task.id) + 1);
+
+        groupDot.style.backgroundColor = color;
+        groupText.textContent = name;
+        groupLabel.title = name + " - Click to switch groups";
+    },
     updateAll: () => {
         empty(tabBar.containerInner);
         tabBar.tabElementMap = {};
@@ -225,6 +239,7 @@ const tabBar = {
             tabBar.setActiveTab(tabs.getSelected());
         }
         tabBar.handleSizeChange();
+        tabBar.updateGroupLabel();
     },
     addTab: (tabId) => {
         var tab = tabs.get(tabId);
@@ -330,6 +345,23 @@ permissionRequests.onChange((tabId) => {
 });
 
 tabBar.initializeTabDragging();
+
+// Group label click - open task overlay to switch groups
+document.getElementById("group-label").addEventListener("click", () => {
+    var taskOverlay = require("taskOverlay/taskOverlay.js");
+    taskOverlay.toggle();
+});
+
+// Update group label when task name changes
+tasks.on("task-updated", (id, key) => {
+    if (
+        key === "name" &&
+        tasks.getSelected() &&
+        id === tasks.getSelected().id
+    ) {
+        tabBar.updateGroupLabel();
+    }
+});
 
 tabBar.container.addEventListener("dragover", (e) => e.preventDefault());
 

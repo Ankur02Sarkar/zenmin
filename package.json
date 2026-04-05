@@ -2,7 +2,7 @@
     "name": "zenmin",
     "productName": "ZenMin",
     "author": "Ankur Sarkar",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "A fast, minimal browser that protects your privacy",
     "electronVersion": "40.6.1",
     "main": "main.build.js",

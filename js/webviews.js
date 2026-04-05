@@ -609,6 +609,101 @@ webviews.bindIPC("clearAllHistory", (tabId) => {
     places.deleteAllHistory();
 });
 
+// Groups page IPC bridge
+webviews.bindIPC("getGroupsData", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var selected = tasks.getSelected();
+    var data = tasks.map(function (task) {
+        return {
+            id: task.id,
+            name: task.name,
+            color: task.color || "#4285f4",
+            tabCount: task.tabs.count(),
+            isCurrent: selected && task.id === selected.id,
+            tabs: task.tabs.get().map(function (tab) {
+                return { id: tab.id, title: tab.title, url: tab.url };
+            }),
+        };
+    });
+    webviews.callAsync(tabId, "send", ["receiveGroupsData", data]);
+});
+
+webviews.bindIPC("groups-action", (tabId, args) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var browserUI = require("browserUI.js");
+    var payload = args[0];
+    var action = payload.action;
+    var data = payload.data;
+
+    if (action === "createGroup") {
+        browserUI.addTask();
+    } else if (action === "deleteGroup") {
+        if (data.groupId) {
+            browserUI.closeTask(data.groupId);
+        }
+    } else if (action === "renameGroup") {
+        if (data.groupId && data.name !== undefined) {
+            tasks.update(data.groupId, { name: data.name || null });
+        }
+    } else if (action === "closeTab") {
+        if (data.groupId && data.tabId) {
+            var task = tasks.get(data.groupId);
+            if (task) {
+                var tabBar = require("navbar/tabBar.js");
+                tabBar.removeTab(data.tabId);
+                task.tabs.destroy(data.tabId);
+                webviews.destroy(data.tabId);
+                if (task.tabs.count() === 0) {
+                    browserUI.closeTask(data.groupId);
+                }
+            }
+        }
+    } else if (action === "switchToTab") {
+        if (data.groupId && data.tabId) {
+            browserUI.switchToTask(data.groupId);
+            browserUI.switchToTab(data.tabId);
+        }
+    }
+
+    // Send response to refresh the page
+    webviews.callAsync(tabId, "send", ["groups-response", { success: true }]);
+});
+
+// Recently closed tabs IPC bridge
+webviews.bindIPC("getRecentlyClosed", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var sessionRestore = require("sessionRestore.js");
+    var items = sessionRestore.getRecentlyClosed();
+    webviews.callAsync(tabId, "send", ["receiveRecentlyClosed", items]);
+});
+
+webviews.bindIPC("restoreClosedTab", (tabId, args) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var sessionRestore = require("sessionRestore.js");
+    var browserUI = require("browserUI.js");
+    var index = args[0];
+    var entry = sessionRestore.removeFromRecentlyClosed(index);
+    if (entry && entry.tabData) {
+        browserUI.addTab(tabs.add(entry.tabData), { enterEditMode: false });
+        webviews.callAsync(tabId, "send", ["closedTabRestored", true]);
+    } else {
+        webviews.callAsync(tabId, "send", ["closedTabRestored", false]);
+    }
+});
+
+webviews.bindIPC("clearRecentlyClosed", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var sessionRestore = require("sessionRestore.js");
+    sessionRestore.clearRecentlyClosed();
+});
+
+// Third Eye go home - close blocked tab and open a fresh new tab (shows NTP)
+webviews.bindIPC("thirdEye-goHome", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var browserUI = require("browserUI.js");
+    browserUI.closeTab(tabId);
+});
+
 // Third Eye IPC bridge
 webviews.bindIPC("thirdEye-getData", (tabId) => {
     if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;

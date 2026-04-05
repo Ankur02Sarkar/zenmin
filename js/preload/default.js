@@ -94,6 +94,34 @@ window.addEventListener("message", (e) => {
         ipc.send("clearAllHistory");
     }
 
+    if (e.data?.message === "getRecentlyClosed") {
+        ipc.send("getRecentlyClosed");
+    }
+
+    if (e.data?.message === "restoreClosedTab") {
+        ipc.send("restoreClosedTab", e.data.index);
+    }
+
+    if (e.data?.message === "clearRecentlyClosed") {
+        ipc.send("clearRecentlyClosed");
+    }
+
+    // Groups page IPC bridge
+    if (e.data?.message === "getGroupsData") {
+        ipc.send("getGroupsData");
+    }
+
+    if (e.data?.message === "groups-action") {
+        ipc.send("groups-action", {
+            action: e.data.action,
+            data: e.data.data,
+        });
+    }
+
+    if (e.data?.message === "thirdEye-goHome") {
+        ipc.send("thirdEye-goHome");
+    }
+
     // Third Eye IPC bridge
     if (e.data?.message === "thirdEye-getData") {
         ipc.send("thirdEye-getData");
@@ -120,6 +148,44 @@ ipc.on("receiveHistoryData", function (e, data) {
     if (window.location.toString().startsWith("zenmin://")) {
         window.postMessage(
             { message: "receiveHistoryData", items: data },
+            window.location.toString(),
+        );
+    }
+});
+
+// Groups page IPC responses
+ipc.on("receiveGroupsData", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "receiveGroupsData", data: data },
+            window.location.toString(),
+        );
+    }
+});
+
+ipc.on("groups-response", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "groups-response", data: data },
+            window.location.toString(),
+        );
+    }
+});
+
+// Recently closed tabs IPC responses
+ipc.on("receiveRecentlyClosed", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "receiveRecentlyClosed", items: data },
+            window.location.toString(),
+        );
+    }
+});
+
+ipc.on("closedTabRestored", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "closedTabRestored", success: data },
             window.location.toString(),
         );
     }

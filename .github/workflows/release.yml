@@ -48,6 +48,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -55,19 +57,23 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Get Version
+      - name: Get Version and Create Tag
         id: version
         run: |
           VERSION=$(grep '"version"' package.json | sed 's/.*"version": *"\([^"]*\)".*/\1/')
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: false
           generate_release_notes: true
+          tag_name: v${{ steps.version.outputs.VERSION }}
           files: |
-            artifacts/macos-x64/**/*.zip
-            artifacts/macos-arm64/**/*.zip
+            artifacts/*-artifact/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

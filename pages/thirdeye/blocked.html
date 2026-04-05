@@ -194,7 +194,6 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-secondary" id="btn-back">Go Back</button>
         <button class="btn btn-primary" id="btn-home">Go to Home</button>
       </div>
 
@@ -283,21 +282,11 @@
       updateTimer();
       setInterval(updateTimer, 1000);
 
-      // Button handlers
-      document
-        .getElementById("btn-back")
-        .addEventListener("click", function () {
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
-            window.location.href = "zenmin://app/pages/newtab/index.html";
-          }
-        });
-
+      // Go Home - send IPC message to navigate tab to homepage
       document
         .getElementById("btn-home")
         .addEventListener("click", function () {
-          window.location.href = "zenmin://app/pages/newtab/index.html";
+          postMessage({ message: "thirdEye-goHome" }, "*");
         });
     </script>
   </body>
