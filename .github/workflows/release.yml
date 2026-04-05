@@ -10,24 +10,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            cmd: npm run buildDebian
-            artifact_name: linux-deb
-            artifact_path: dist/app/*.deb
-          - os: ubuntu-latest
-            cmd: npm run buildRedhat
-            artifact_name: linux-rpm
-            artifact_path: dist/app/*.rpm
-          - os: ubuntu-latest
-            cmd: npm run buildAppImage
-            artifact_name: linux-appimage
-            artifact_path: dist/app/*.AppImage
-          - os: windows-latest
-            cmd: npm run buildWindows
-            artifact_name: windows
-            artifact_path: |
-              dist/app/*.zip
-              dist/app/*.exe
           - os: macos-15
             env:
               SDKROOT: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
@@ -82,11 +64,6 @@ jobs:
           prerelease: false
           generate_release_notes: true
           files: |
-            artifacts/linux-deb/**/*.deb
-            artifacts/linux-rpm/**/*.rpm
-            artifacts/linux-appimage/**/*.AppImage
-            artifacts/windows/**/*.zip
-            artifacts/windows/**/*.exe
             artifacts/macos-x64/**/*.zip
             artifacts/macos-arm64/**/*.zip
         env:
