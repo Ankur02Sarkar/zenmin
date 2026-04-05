@@ -7,6 +7,8 @@ var taskOverlay = require("taskOverlay/taskOverlay.js");
 const writeFileAtomic = require("write-file-atomic");
 const statistics = require("js/statistics.js");
 
+const RECENTLY_CLOSED_MAX = 50;
+
 const sessionRestore = {
     savePath:
         window.globalArgs["user-data-path"] +
@@ -14,6 +16,7 @@ const sessionRestore = {
             ? "\\sessionRestore.json"
             : "/sessionRestore.json"),
     previousState: null,
+    recentlyClosed: [],
     save: (forceSave, sync) => {
         //only one window (the focused one) should be responsible for saving session restore data
         if (!document.body.classList.contains("focused")) {
@@ -24,6 +27,7 @@ const sessionRestore = {
         var data = {
             version: 2,
             state: JSON.parse(stateString),
+            recentlyClosed: sessionRestore.recentlyClosed,
             saveTime: Date.now(),
         };
 
@@ -128,6 +132,14 @@ const sessionRestore = {
 
                 browserUI.addTab(tasks.getSelected().tabs.add());
                 return;
+            }
+
+            // restore recently closed tabs
+            if (Array.isArray(data.recentlyClosed)) {
+                sessionRestore.recentlyClosed = data.recentlyClosed.slice(
+                    0,
+                    RECENTLY_CLOSED_MAX,
+                );
             }
 
             // add the saved tasks
@@ -275,8 +287,49 @@ const sessionRestore = {
             taskOverlay.show();
         }
     },
+    addToRecentlyClosed: (tabData, groupName) => {
+        if (!tabData || !tabData.url || tabData.private) return;
+        sessionRestore.recentlyClosed.unshift({
+            url: tabData.url,
+            title: tabData.title || "",
+            closedAt: Date.now(),
+            groupName: groupName || null,
+            tabData: tabData,
+        });
+        if (sessionRestore.recentlyClosed.length > RECENTLY_CLOSED_MAX) {
+            sessionRestore.recentlyClosed.length = RECENTLY_CLOSED_MAX;
+        }
+    },
+    getRecentlyClosed: () => {
+        return sessionRestore.recentlyClosed;
+    },
+    clearRecentlyClosed: () => {
+        sessionRestore.recentlyClosed = [];
+    },
+    removeFromRecentlyClosed: (index) => {
+        if (index >= 0 && index < sessionRestore.recentlyClosed.length) {
+            return sessionRestore.recentlyClosed.splice(index, 1)[0];
+        }
+        return null;
+    },
     initialize: () => {
-        setInterval(sessionRestore.save, 30000);
+        // Track closed tabs globally
+        tasks.on("tab-destroyed", (tabId, taskId) => {
+            var task = tasks.get(taskId);
+            var groupName = task ? task.name || null : null;
+            // The tab has already been removed from state by the time this event fires,
+            // but the tab data was pushed to task.tabHistory in TabList.destroy().
+            // We can grab it from there.
+            if (task && task.tabHistory && task.tabHistory.stack.length > 0) {
+                var lastClosed =
+                    task.tabHistory.stack[task.tabHistory.stack.length - 1];
+                if (lastClosed && lastClosed.url) {
+                    sessionRestore.addToRecentlyClosed(lastClosed, groupName);
+                }
+            }
+        });
+
+        setInterval(sessionRestore.save, 10000);
 
         window.onbeforeunload = (e) => {
             sessionRestore.save(true, true);

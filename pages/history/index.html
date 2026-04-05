@@ -11,6 +11,14 @@
   <body>
     <div class="header">
       <h1 data-string="specialPageHistory">History</h1>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-history" type="button">
+          Browsing History
+        </button>
+        <button class="tab-btn" id="tab-closed" type="button">
+          Recently Closed
+        </button>
+      </div>
       <div class="header-actions">
         <div class="search-container">
           <input
@@ -19,7 +27,9 @@
             placeholder="Search history..."
           />
         </div>
-        <button id="clear-all-button" class="danger-button">Clear All</button>
+        <button id="clear-all-button" class="danger-button" type="button">
+          Clear All
+        </button>
       </div>
     </div>
     <div class="content" id="history-container">
@@ -32,9 +42,18 @@
       </div>
       <div class="error-state" id="error-state" hidden>
         <span>Failed to load history.</span>
-        <button id="retry-button">Retry</button>
+        <button id="retry-button" type="button">Retry</button>
       </div>
     </div>
+
+    <!-- Recently Closed panel -->
+    <div class="content" id="closed-container" hidden>
+      <div class="history-list" id="closed-list"></div>
+      <div class="empty-state" id="closed-empty" hidden>
+        <span>No recently closed tabs.</span>
+      </div>
+    </div>
+
     <script src="../../js/util/settings/settingsPreload.js"></script>
     <script src="../../js/util/settings/settingsContent.js"></script>
     <script src="../../dist/localization.build.js"></script>

@@ -138,6 +138,10 @@
         <div id="tab-editor" hidden>
           <input id="tab-editor-input" spellcheck="false" />
         </div>
+        <div id="group-label" title="Click to switch groups">
+          <span id="group-color-dot"></span>
+          <span id="group-name-text"></span>
+        </div>
         <div id="tabs-inner" role="tablist" class="has-thin-scrollbar"></div>
       </div>
       <div class="navbar-right-actions">
@@ -158,10 +162,10 @@
     <div id="hamburger-dropdown" hidden>
       <div class="hm-section">
         <div class="hm-item" data-action="allTabs">
-          <i class="i carbon:switcher"></i><span>All Tabs</span>
+          <i class="i carbon:switcher"></i><span>All Groups</span>
         </div>
         <div class="hm-item" data-action="searchTabs">
-          <i class="i carbon:search"></i><span>Search Tabs</span>
+          <i class="i carbon:search"></i><span>Search Groups</span>
         </div>
       </div>
       <div class="hm-divider"></div>
@@ -183,6 +187,9 @@
         </div>
         <div class="hm-item" data-action="thirdeye">
           <i class="i carbon:view"></i><span>Third Eye</span>
+        </div>
+        <div class="hm-item" data-action="groups">
+          <i class="i carbon:group-objects"></i><span>Groups</span>
         </div>
       </div>
       <div class="hm-divider"></div>
@@ -209,6 +216,7 @@
         <img id="ntp-background" hidden />
         <div id="ntp-main">
           <div id="ntp-greeting"></div>
+          <div id="ntp-ip-info"></div>
           <div id="ntp-search-container">
             <i class="i carbon:search" id="ntp-search-icon"></i>
             <input
@@ -218,6 +226,7 @@
               spellcheck="false"
             />
           </div>
+          <div id="ntp-special-tabs"></div>
           <div id="ntp-suggestions"></div>
         </div>
         <div id="ntp-background-controls">

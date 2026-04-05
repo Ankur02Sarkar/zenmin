@@ -13,11 +13,31 @@ var newTabPage = {
     searchInput: document.getElementById("ntp-search-input"),
     suggestionsContainer: document.getElementById("ntp-suggestions"),
     greetingEl: document.getElementById("ntp-greeting"),
+    ipInfoEl: document.getElementById("ntp-ip-info"),
+    specialTabsEl: document.getElementById("ntp-special-tabs"),
     imagePath: path.join(
         window.globalArgs["user-data-path"],
         "newTabBackground",
     ),
     blobInstance: null,
+    cachedUserData: null,
+    cachedIPInfo: null,
+    loadUserData: function () {
+        if (newTabPage.cachedUserData)
+            return Promise.resolve(newTabPage.cachedUserData);
+        return fetch("zenmin://app/user.json")
+            .then(function (res) {
+                return res.json();
+            })
+            .then(function (data) {
+                newTabPage.cachedUserData = data;
+                return data;
+            })
+            .catch(function () {
+                newTabPage.cachedUserData = {};
+                return {};
+            });
+    },
     reloadBackground: function () {
         fs.readFile(newTabPage.imagePath, function (err, data) {
             if (newTabPage.blobInstance) {
@@ -49,12 +69,164 @@ var newTabPage = {
         var greeting = "Good evening";
         if (hours < 12) greeting = "Good morning";
         else if (hours < 18) greeting = "Good afternoon";
-        newTabPage.greetingEl.textContent = greeting;
+
+        newTabPage.loadUserData().then(function (userData) {
+            var firstName = (userData.name || "").split(" ")[0];
+            if (firstName) {
+                greeting += ", " + firstName;
+            }
+            newTabPage.greetingEl.textContent = greeting;
+        });
     },
     updateSearchPlaceholder: function () {
         var engine = searchEngine.getCurrent();
         var name = engine.name || "the web";
         newTabPage.searchInput.placeholder = "Search " + name + " or enter URL";
+    },
+    loadIPInfo: function () {
+        if (!newTabPage.ipInfoEl) return;
+
+        // Use cached data if available
+        if (newTabPage.cachedIPInfo) {
+            newTabPage.renderIPInfo(newTabPage.cachedIPInfo);
+            return;
+        }
+
+        fetch("https://ipinfo.io/json")
+            .then(function (res) {
+                return res.json();
+            })
+            .then(function (data) {
+                newTabPage.cachedIPInfo = data;
+                newTabPage.renderIPInfo(data);
+            })
+            .catch(function () {
+                // Graceful degradation - show nothing
+                newTabPage.ipInfoEl.textContent = "";
+            });
+    },
+    renderIPInfo: function (data) {
+        if (!newTabPage.ipInfoEl || !data) return;
+
+        newTabPage.ipInfoEl.innerHTML = "";
+
+        var parts = [];
+        if (data.ip) parts.push(data.ip);
+        var location = [data.city, data.region, data.country]
+            .filter(Boolean)
+            .join(", ");
+        if (location) parts.push(location);
+
+        var textSpan = document.createElement("span");
+        textSpan.textContent = parts.join(" \u00B7 ");
+        newTabPage.ipInfoEl.appendChild(textSpan);
+
+        // Add maps link if coordinates are available
+        if (data.loc) {
+            var coords = data.loc.split(",");
+            if (coords.length === 2) {
+                var separator = document.createTextNode(" \u00B7 ");
+                newTabPage.ipInfoEl.appendChild(separator);
+
+                var mapsLink = document.createElement("a");
+                mapsLink.href = "#";
+                mapsLink.textContent = "\uD83D\uDCCD View on Maps";
+                mapsLink.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    var mapsUrl =
+                        "https://www.google.com/maps/@" +
+                        coords[0] +
+                        "," +
+                        coords[1] +
+                        ",14z";
+                    webviews.update(tabs.getSelected(), mapsUrl);
+                });
+                newTabPage.ipInfoEl.appendChild(mapsLink);
+            }
+        }
+    },
+    loadSpecialTabs: function () {
+        if (!newTabPage.specialTabsEl) return;
+
+        newTabPage.loadUserData().then(function (userData) {
+            newTabPage.specialTabsEl.innerHTML = "";
+
+            var specialItems = [];
+
+            if (userData.linkedin) {
+                specialItems.push({
+                    name: "LinkedIn",
+                    url: userData.linkedin,
+                    icon: "carbon:logo-linkedin",
+                    gradient: "linear-gradient(135deg, #0077b5, #00a0dc)",
+                });
+            }
+
+            if (userData.github) {
+                specialItems.push({
+                    name: "GitHub",
+                    url: userData.github,
+                    icon: "carbon:logo-github",
+                    gradient: "linear-gradient(135deg, #24292e, #586069)",
+                });
+            }
+
+            if (userData.email) {
+                specialItems.push({
+                    name: "Email",
+                    url: "mailto:" + userData.email,
+                    icon: "carbon:email",
+                    gradient: "linear-gradient(135deg, #ea4335, #fbbc04)",
+                });
+            }
+
+            if (userData.youtube) {
+                specialItems.push({
+                    name: "YouTube",
+                    url: userData.youtube,
+                    icon: "carbon:logo-youtube",
+                    gradient: "linear-gradient(135deg, #ff0000, #cc0000)",
+                });
+            }
+
+            if (userData.website) {
+                specialItems.push({
+                    name: "Website",
+                    url: userData.website,
+                    icon: "carbon:globe",
+                    gradient: "linear-gradient(135deg, #667eea, #764ba2)",
+                });
+            }
+
+            if (specialItems.length === 0) return;
+
+            specialItems.forEach(function (item) {
+                var card = document.createElement("div");
+                card.className = "ntp-special-card";
+                card.style.background = item.gradient;
+                card.setAttribute("data-url", item.url);
+
+                var icon = document.createElement("i");
+                icon.className = "i " + item.icon;
+
+                var label = document.createElement("span");
+                label.textContent = item.name;
+
+                card.appendChild(icon);
+                card.appendChild(label);
+
+                card.addEventListener("click", function () {
+                    var url = this.getAttribute("data-url");
+                    if (url.startsWith("mailto:")) {
+                        require("electron").shell.openExternal(url);
+                    } else {
+                        webviews.update(tabs.getSelected(), url);
+                    }
+                });
+
+                newTabPage.specialTabsEl.appendChild(card);
+            });
+        });
     },
     loadSuggestions: function () {
         newTabPage.suggestionsContainer.innerHTML = "";
@@ -126,6 +298,8 @@ var newTabPage = {
         newTabPage.reloadBackground();
         newTabPage.updateGreeting();
         newTabPage.updateSearchPlaceholder();
+        newTabPage.loadIPInfo();
+        newTabPage.loadSpecialTabs();
 
         // Refresh suggestions when NTP becomes visible
         var observer = new MutationObserver(function (mutations) {
@@ -134,6 +308,7 @@ var newTabPage = {
                     if (document.body.classList.contains("is-ntp")) {
                         newTabPage.loadSuggestions();
                         newTabPage.updateGreeting();
+                        newTabPage.loadIPInfo();
                     }
                 }
             });
