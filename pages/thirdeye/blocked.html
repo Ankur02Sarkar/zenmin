@@ -1,0 +1,304 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Access Blocked - Third Eye</title>
+    <link rel="stylesheet" href="../../css/base.css" />
+    <style>
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: ".SFNSText-Regular", "Helvetica Neue", "Arial", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0a0e1a 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      body.dark-mode {
+        background: linear-gradient(
+          135deg,
+          #050810 0%,
+          #0d0d1a 50%,
+          #0b1020 100%
+        );
+      }
+
+      .blocked-container {
+        text-align: center;
+        max-width: 520px;
+        padding: 3em 2.5em;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .eye-icon {
+        font-size: 3.5em;
+        margin-bottom: 0.2em;
+        display: block;
+        opacity: 0.9;
+        animation: pulse 3s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.7;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+      }
+
+      .blocked-title {
+        font-size: 1.6em;
+        font-weight: 600;
+        color: #ff6b6b;
+        margin: 0.3em 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .blocked-subtitle {
+        font-size: 1em;
+        opacity: 0.7;
+        margin: 0.5em 0 1.5em;
+      }
+
+      .timer-section {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 1em 1.5em;
+        margin: 1.2em 0;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .timer-label {
+        font-size: 0.8em;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        opacity: 0.5;
+        margin-bottom: 0.5em;
+      }
+
+      .timer-value {
+        font-size: 1.5em;
+        font-weight: 300;
+        font-variant-numeric: tabular-nums;
+        color: #74b9ff;
+      }
+
+      .quote-section {
+        margin: 1.5em 0;
+        padding: 1em;
+        border-left: 3px solid rgba(116, 185, 255, 0.4);
+        text-align: left;
+      }
+
+      .quote-text {
+        font-style: italic;
+        font-size: 0.9em;
+        line-height: 1.6;
+        opacity: 0.8;
+      }
+
+      .actions {
+        margin-top: 1.8em;
+        display: flex;
+        gap: 1em;
+        justify-content: center;
+      }
+
+      .btn {
+        -webkit-appearance: none;
+        border: none;
+        padding: 0.7em 1.5em;
+        border-radius: 8px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e0e0e0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .btn-primary {
+        background: rgba(116, 185, 255, 0.2);
+        color: #74b9ff;
+        border: 1px solid rgba(116, 185, 255, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: rgba(116, 185, 255, 0.3);
+      }
+
+      .blocked-url {
+        font-size: 0.75em;
+        opacity: 0.35;
+        margin-top: 1.5em;
+        word-break: break-all;
+        max-height: 2.5em;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="blocked-container">
+      <span class="eye-icon">&#128065;</span>
+      <div class="blocked-title">Access Blocked</div>
+      <div class="blocked-subtitle">This page is currently disabled</div>
+
+      <div class="timer-section" id="timer-section">
+        <div class="timer-label">Time remaining</div>
+        <div class="timer-value" id="timer-value">--:--:--</div>
+      </div>
+
+      <div class="quote-section">
+        <div class="quote-text" id="quote-text"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" id="btn-back">Go Back</button>
+        <button class="btn btn-primary" id="btn-home">Go to Home</button>
+      </div>
+
+      <div class="blocked-url" id="blocked-url"></div>
+    </div>
+
+    <script src="../../js/util/settings/settingsContent.js"></script>
+    <script src="../../js/util/theme.js"></script>
+    <script>
+      var quotes = [
+        "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela",
+        "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
+        "The only way to do great work is to love what you do. - Steve Jobs",
+        "In the middle of every difficulty lies opportunity. - Albert Einstein",
+        "It does not matter how slowly you go as long as you do not stop. - Confucius",
+        "The secret of getting ahead is getting started. - Mark Twain",
+        "Believe you can and you're halfway there. - Theodore Roosevelt",
+        "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill",
+        "The best time to plant a tree was 20 years ago. The second best time is now. - Chinese Proverb",
+        "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+        "Everything you've ever wanted is on the other side of fear. - George Addair",
+        "Discipline is the bridge between goals and accomplishment. - Jim Rohn",
+        "The only person you are destined to become is the person you decide to be. - Ralph Waldo Emerson",
+        "Act as if what you do makes a difference. It does. - William James",
+        "You are never too old to set another goal or to dream a new dream. - C.S. Lewis",
+        "What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson",
+        "With self-discipline most anything is possible. - Theodore Roosevelt",
+        "The mind is everything. What you think you become. - Buddha",
+        "Strive not to be a success, but rather to be of value. - Albert Einstein",
+        "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+        "It always seems impossible until it's done. - Nelson Mandela",
+        "We may encounter many defeats but we must not be defeated. - Maya Angelou",
+        "Knowing is not enough; we must apply. Willing is not enough; we must do. - Johann Wolfgang von Goethe",
+        "The best revenge is massive success. - Frank Sinatra",
+        "I have not failed. I've just found 10,000 ways that won't work. - Thomas Edison",
+      ];
+
+      var params = new URLSearchParams(window.location.search);
+      var blockedUrl = params.get("url") || "";
+      var expiryISO = params.get("expiry");
+      var reason = params.get("reason") || "";
+      var match = params.get("match") || "";
+
+      // Show blocked URL
+      document.getElementById("blocked-url").textContent = blockedUrl;
+
+      // Show random quote
+      var randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quote-text").textContent =
+        '"' + randomQuote + '"';
+
+      // Timer countdown
+      function updateTimer() {
+        if (!expiryISO) {
+          document.getElementById("timer-value").textContent = "No timer set";
+          return;
+        }
+
+        var now = new Date();
+        var expiry = new Date(expiryISO);
+        var diff = expiry.getTime() - now.getTime();
+
+        if (diff <= 0) {
+          document.getElementById("timer-value").textContent = "Expired";
+          document.getElementById("timer-section").style.borderColor =
+            "rgba(255, 107, 107, 0.3)";
+          return;
+        }
+
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        var parts = [];
+        if (days > 0) parts.push(days + (days === 1 ? " day" : " days"));
+        if (hours > 0) parts.push(hours + (hours === 1 ? " hour" : " hours"));
+        parts.push(minutes + (minutes === 1 ? " min" : " mins"));
+        parts.push(seconds + "s");
+
+        document.getElementById("timer-value").textContent = parts.join(", ");
+      }
+
+      updateTimer();
+      setInterval(updateTimer, 1000);
+
+      // Button handlers
+      document
+        .getElementById("btn-back")
+        .addEventListener("click", function () {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = "zenmin://app/pages/newtab/index.html";
+          }
+        });
+
+      document
+        .getElementById("btn-home")
+        .addEventListener("click", function () {
+          window.location.href = "zenmin://app/pages/newtab/index.html";
+        });
+    </script>
+  </body>
+</html>
