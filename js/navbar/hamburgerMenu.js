@@ -14,6 +14,7 @@ var hamburgerMenu = {
         }
     },
     open: function () {
+        webviews.requestPlaceholder("hamburgerMenu");
         hamburgerMenu.dropdown.hidden = false;
         hamburgerMenu.isOpen = true;
         hamburgerMenu.loadSuggestions();
@@ -21,6 +22,7 @@ var hamburgerMenu = {
     close: function () {
         hamburgerMenu.dropdown.hidden = true;
         hamburgerMenu.isOpen = false;
+        webviews.hidePlaceholder("hamburgerMenu");
     },
     loadSuggestions: function () {
         var container = document.getElementById("hm-suggestions");

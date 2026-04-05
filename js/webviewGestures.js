@@ -1,31 +1,19 @@
 var webviews = require("webviews.js");
 
+var navbar = document.getElementById("navbar");
+
 var webviewGestures = {
-    showBackArrow: () => {
-        // this is temporarily disabled until we find a way to make it work with BrowserViews
-        return;
-        var backArrow = document.getElementById("leftArrowContainer");
-        backArrow.classList.toggle("shown");
-        backArrow.classList.toggle("animating");
-        setTimeout(() => {
-            backArrow.classList.toggle("shown");
+    showBackArrow: function () {
+        navbar.classList.add("swipe-indicator-left");
+        setTimeout(function () {
+            navbar.classList.remove("swipe-indicator-left");
         }, 600);
-        setTimeout(() => {
-            backArrow.classList.toggle("animating");
-        }, 900);
     },
-    showForwardArrow: () => {
-        // this is temporarily disabled until we find a way to make it work with BrowserViews
-        return;
-        var forwardArrow = document.getElementById("rightArrowContainer");
-        forwardArrow.classList.toggle("shown");
-        forwardArrow.classList.toggle("animating");
-        setTimeout(() => {
-            forwardArrow.classList.toggle("shown");
+    showForwardArrow: function () {
+        navbar.classList.add("swipe-indicator-right");
+        setTimeout(function () {
+            navbar.classList.remove("swipe-indicator-right");
         }, 600);
-        setTimeout(() => {
-            forwardArrow.classList.toggle("animating");
-        }, 900);
     },
     zoomWebviewBy: (tabId, amt) => {
         webviews.callAsync(tabId, "zoomFactor", (err, oldFactor) => {

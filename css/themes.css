@@ -190,6 +190,19 @@ body.theme-royal .tab-item.active {
     color: var(--theme-text);
 }
 
+/* themed tab dividers */
+body.theme-ocean .tab-item:not(:last-child),
+body.theme-sunset .tab-item:not(:last-child),
+body.theme-royal .tab-item:not(:last-child) {
+    border-right-color: var(--theme-glass-border);
+}
+
+body.theme-ocean .tab-item.active:not(:only-child)::after,
+body.theme-sunset .tab-item.active:not(:only-child)::after,
+body.theme-royal .tab-item.active:not(:only-child)::after {
+    background: var(--theme-primary);
+}
+
 body.theme-ocean .navbar-action-button,
 body.theme-sunset .navbar-action-button,
 body.theme-royal .navbar-action-button {
@@ -238,7 +251,7 @@ body.theme-royal #task-overlay {
 /* === Hamburger Dropdown Glass === */
 
 #hamburger-dropdown {
-    position: absolute;
+    position: fixed;
     top: calc(36px + var(--control-space-top, 0px));
     right: 4px;
     min-width: 220px;
@@ -249,10 +262,39 @@ body.theme-royal #task-overlay {
     border-radius: 10px;
     box-shadow:
         var(--theme-glass-shadow),
-        0 2px 8px rgba(0, 0, 0, 0.08);
+        0 4px 24px rgba(0, 0, 0, 0.15);
     z-index: 100;
     padding: 6px 0;
     overflow: hidden;
+    animation: hm-dropdown-in 0.15s ease-out;
+}
+
+@keyframes hm-dropdown-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Backdrop overlay behind dropdown */
+#hamburger-dropdown:not([hidden])::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.08);
+    z-index: -1;
+    pointer-events: none;
+}
+
+body.dark-mode #hamburger-dropdown:not([hidden])::before {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .hm-section {
@@ -475,4 +517,35 @@ body.theme-royal #findinpage-bar {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     color: var(--theme-text) !important;
+}
+
+/* === Swipe Gesture Edge Indicators === */
+
+#navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px var(--theme-primary, #0077b6);
+    transition: box-shadow 0.15s ease-out;
+}
+
+#navbar:not(.swipe-indicator-left):not(.swipe-indicator-right) {
+    box-shadow: none;
+    transition: box-shadow 0.4s ease-out;
+}
+
+#navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px var(--theme-primary, #0077b6);
+    transition: box-shadow 0.15s ease-out;
+}
+
+/* Theme-specific swipe indicator colors */
+body.theme-sunset #navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px #e63946;
+}
+body.theme-sunset #navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px #e63946;
+}
+body.theme-royal #navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px #7b2ff7;
+}
+body.theme-royal #navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px #7b2ff7;
 }

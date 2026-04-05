@@ -148,6 +148,34 @@ body.linux #menu-button {
     display: none;
 }
 
+/* always-visible dividers between tabs */
+.tab-item:not(:last-child) {
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+.dark-theme .tab-item:not(:last-child) {
+    border-right-color: rgba(255, 255, 255, 0.12);
+}
+
+/* active tab has no divider on either side */
+.tab-item.active,
+.tab-item.active + .tab-item {
+    border-right-color: transparent;
+}
+
+/* active tab bottom accent */
+.tab-item.active:not(:only-child)::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--theme-primary, #0077b6);
+    opacity: 0.8;
+}
+
+/* stronger dividers when setting is enabled */
 #navbar.show-dividers .tab-item:not(:last-child) {
     border-right: 1px solid rgba(0, 0, 0, 0.15);
 }
