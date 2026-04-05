@@ -697,13 +697,11 @@ webviews.bindIPC("clearRecentlyClosed", (tabId) => {
     sessionRestore.clearRecentlyClosed();
 });
 
-// Third Eye go home - navigate tab to empty URL (shows NTP)
+// Third Eye go home - close blocked tab and open a fresh new tab (shows NTP)
 webviews.bindIPC("thirdEye-goHome", (tabId) => {
     if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
     var browserUI = require("browserUI.js");
-    tabs.update(tabId, { url: "" });
-    webviews.update(tabId, "about:blank");
-    document.body.classList.add("is-ntp");
+    browserUI.closeTab(tabId);
 });
 
 // Third Eye IPC bridge
