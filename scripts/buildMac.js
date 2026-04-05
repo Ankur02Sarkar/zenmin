@@ -37,7 +37,7 @@ require("./createPackage.js")("mac", { arch: toArch(platform) }).then(
         /* create zip file */
 
         var output = fs.createWriteStream(
-            "dist/app/min-v" + version + "-mac-" + platform + ".zip",
+            "dist/app/zenmin-v" + version + "-mac-" + platform + ".zip",
         );
         var archive = archiver("zip", {
             zlib: { level: 9 },

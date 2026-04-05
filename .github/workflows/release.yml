@@ -74,7 +74,6 @@ jobs:
           generate_release_notes: true
           tag_name: v${{ steps.version.outputs.VERSION }}
           files: |
-            artifacts/macos-x64/**/*.zip
-            artifacts/macos-arm64/**/*.zip
+            artifacts/*-artifact/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
