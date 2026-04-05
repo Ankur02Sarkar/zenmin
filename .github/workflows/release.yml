@@ -24,11 +24,14 @@ jobs:
             artifact_path: dist/app/*.zip
     env:
       SDKROOT: ${{ matrix.env.SDKROOT }}
+      CI: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: Rename .npmrc for bun compatibility
+        run: mv .npmrc .npmrc.bak 2>/dev/null || true
       - run: bun install
       - name: Build ${{ matrix.artifact_name }}
         run: ${{ matrix.cmd }}
