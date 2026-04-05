@@ -13,23 +13,23 @@ jobs:
           - os: macos-15
             env:
               SDKROOT: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-            cmd: npm run buildMacIntel
+            cmd: bun run buildMacIntel
             artifact_name: macos-x64
             artifact_path: dist/app/*.zip
           - os: macos-15
             env:
               SDKROOT: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-            cmd: npm run buildMacArm
+            cmd: bun run buildMacArm
             artifact_name: macos-arm64
             artifact_path: dist/app/*.zip
     env:
       SDKROOT: ${{ matrix.env.SDKROOT }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 25
-      - run: npm install --omit=optional
+          bun-version: latest
+      - run: bun install
       - name: Build ${{ matrix.artifact_name }}
         run: ${{ matrix.cmd }}
       - name: Upload ${{ matrix.artifact_name }} artifact
@@ -45,18 +45,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 25
+          bun-version: latest
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Display structure of downloaded files
-        run: ls -R artifacts
       - name: Get Version
         id: version
-        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(bun -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
