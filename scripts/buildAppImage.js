@@ -1,6 +1,8 @@
 const builder = require("electron-builder");
 const packageFile = require("./../package.json");
 const version = packageFile.version;
+const appName = packageFile.productName || packageFile.name;
+const appDescription = packageFile.description;
 const Platform = builder.Platform;
 const Arch = builder.Arch;
 
@@ -16,11 +18,10 @@ require("./createPackage.js")("linux", { arch: Arch.x64 }).then((path) => {
                 "x-scheme-handler/https",
                 "text/html",
             ],
-            synopsis:
-                "Min is a fast, minimal browser that protects your privacy.",
+            synopsis: appDescription,
             description:
                 "A web browser with smarter search, improved tab management, and built-in ad blocking. Includes full-text history search, instant answers from DuckDuckGo, the ability to split tabs into groups, and more.",
-            maintainer: "Min Developers <280953907a@zoho.com>",
+            maintainer: packageFile.author,
         },
         directories: {
             output: "dist/app/",

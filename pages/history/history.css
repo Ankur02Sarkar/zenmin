@@ -14,6 +14,49 @@ html {
     font-weight: 300;
 }
 
+/* Tab toggle bar */
+.tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0.75em;
+    border-bottom: 1px solid #e0e0e0;
+}
+.tab-btn {
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    padding: 0.5em 1.2em;
+    font-size: 0.85em;
+    font-weight: 500;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
+    font-family: inherit;
+}
+.tab-btn:hover {
+    color: #333;
+}
+.tab-btn.active {
+    color: #0077b6;
+    border-bottom-color: #0077b6;
+}
+body.dark-mode .tab-bar {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .tab-btn {
+    color: #777;
+}
+body.dark-mode .tab-btn:hover {
+    color: #ccc;
+}
+body.dark-mode .tab-btn.active {
+    color: #48cae4;
+    border-bottom-color: #48cae4;
+}
+
 .header-actions {
     display: flex;
     align-items: center;
@@ -138,6 +181,29 @@ html {
     margin-top: 0;
 }
 
+/* Restore button for recently closed tabs */
+.restore-btn {
+    -webkit-appearance: none;
+    border: none;
+    background: rgba(0, 119, 182, 0.1);
+    color: #0077b6;
+    padding: 0.3em 0.8em;
+    border-radius: 6px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    font-family: inherit;
+}
+.restore-btn:hover {
+    background: rgba(0, 119, 182, 0.2);
+}
+.closed-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
 /* Dark mode */
 body.dark-mode .header {
     border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -170,4 +236,12 @@ body.dark-mode .error-state button {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.15);
     color: #ccc;
+}
+
+body.dark-mode .restore-btn {
+    background: rgba(72, 202, 228, 0.15);
+    color: #48cae4;
+}
+body.dark-mode .restore-btn:hover {
+    background: rgba(72, 202, 228, 0.25);
 }

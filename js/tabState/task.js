@@ -1,9 +1,20 @@
 const TabList = require("tabState/tab.js");
 const TabStack = require("tabRestore.js");
 
+const GROUP_COLORS = [
+    "#4285f4", // Blue
+    "#34a853", // Green
+    "#ea4335", // Red
+    "#8e24aa", // Purple
+    "#ff6d00", // Orange
+    "#00acc1", // Cyan
+    "#f9a825", // Yellow
+    "#e91e63", // Pink
+];
+
 class TaskList {
     constructor() {
-        this.tasks = []; // each task is {id, name, tabs: [], tabHistory: TabStack}
+        this.tasks = []; // each task is {id, name, color, tabs: [], tabHistory: TabStack}
         this.events = [];
         this.pendingCallbacks = [];
         this.pendingCallbackTimeout = null;
@@ -40,6 +51,9 @@ class TaskList {
     add(task = {}, index, emit = true) {
         const newTask = {
             name: task.name || null,
+            color:
+                task.color ||
+                GROUP_COLORS[this.tasks.length % GROUP_COLORS.length],
             tabs: new TabList(task.tabs, this),
             tabHistory: new TabStack(task.tabHistory),
             collapsed: task.collapsed, // this property must stay undefined if it is already (since there is a difference between "explicitly uncollapsed" and "never collapsed")

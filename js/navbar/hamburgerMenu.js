@@ -112,6 +112,12 @@ var hamburgerMenu = {
                     { enterEditMode: false },
                 );
                 break;
+            case "groups":
+                browserUI.addTab(
+                    tabs.add({ url: urlParser.parse("zenmin://groups") }),
+                    { enterEditMode: false },
+                );
+                break;
         }
     },
     initialize: function () {

@@ -5,6 +5,8 @@ const Arch = builder.Arch;
 
 const packageFile = require("./../package.json");
 const version = packageFile.version;
+const appName = packageFile.productName || packageFile.name;
+const appNameLower = appName.toLowerCase();
 
 const createPackage = require("./createPackage.js");
 
@@ -26,12 +28,18 @@ async function afterPackageBuilt(packagePath) {
 
     /* create zip files */
     var output = fs.createWriteStream(
-        "dist/app/" + "Min-v" + version + "-windows" + archSuffix + ".zip",
+        "dist/app/" +
+            appNameLower +
+            "-v" +
+            version +
+            "-windows" +
+            archSuffix +
+            ".zip",
     );
     var archive = archiver("zip", {
         zlib: { level: 9 },
     });
-    archive.directory(packagePath, "Min-v" + version);
+    archive.directory(packagePath, appName + "-v" + version);
     archive.pipe(output);
     await archive.finalize();
 
@@ -40,10 +48,11 @@ async function afterPackageBuilt(packagePath) {
 
     const options = {
         src: packagePath,
-        dest: "dist/app/min-installer" + archSuffix,
+        dest: "dist/app/" + appNameLower + "-installer" + archSuffix,
         icon: "icons/icon256.ico",
         animation: "icons/windows-installer.gif",
-        licenseUrl: "https://github.com/minbrowser/min/blob/master/LICENSE.txt",
+        licenseUrl:
+            "https://github.com/AISense-Innovations/zenmin/blob/master/LICENSE.txt",
         noMsi: true,
     };
 
@@ -54,12 +63,21 @@ async function afterPackageBuilt(packagePath) {
     await installer(options)
         .then(() => {
             fs.renameSync(
-                "./dist/app/min-installer" +
+                "./dist/app/" +
+                    appNameLower +
+                    "-installer" +
                     archSuffix +
-                    "/min-" +
+                    "/" +
+                    appNameLower +
+                    "-" +
                     version +
                     "-setup.exe",
-                "./dist/app/min-" + version + archSuffix + "-setup.exe",
+                "./dist/app/" +
+                    appNameLower +
+                    "-" +
+                    version +
+                    archSuffix +
+                    "-setup.exe",
             );
         })
         .catch((err) => {
