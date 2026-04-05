@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Downloads</title>
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="downloads.css" />
+    <link rel="stylesheet" href="../../ext/icons/iconfont.css" />
+    <link rel="stylesheet" href="../pagebase.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1 data-string="specialPageDownloads">Downloads</h1>
+    </div>
+    <div class="content" id="downloads-container">
+      <div class="downloads-list" id="downloads-list"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <span data-string="downloadsEmpty">No downloads yet.</span>
+      </div>
+      <div class="loading-state" id="loading-state">
+        <span>Loading...</span>
+      </div>
+      <div class="error-state" id="error-state" hidden>
+        <span>Failed to load downloads.</span>
+        <button id="retry-button">Retry</button>
+      </div>
+    </div>
+    <script src="../../js/util/settings/settingsPreload.js"></script>
+    <script src="../../js/util/settings/settingsContent.js"></script>
+    <script src="../../dist/localization.build.js"></script>
+    <script src="downloads.js"></script>
+  </body>
+</html>

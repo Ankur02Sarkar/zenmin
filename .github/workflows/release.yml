@@ -1,0 +1,93 @@
+name: Build and Release
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cmd: npm run buildDebian
+            artifact_name: linux-deb
+            artifact_path: dist/app/*.deb
+          - os: ubuntu-latest
+            cmd: npm run buildRedhat
+            artifact_name: linux-rpm
+            artifact_path: dist/app/*.rpm
+          - os: ubuntu-latest
+            cmd: npm run buildAppImage
+            artifact_name: linux-appimage
+            artifact_path: dist/app/*.AppImage
+          - os: windows-latest
+            cmd: npm run buildWindows
+            artifact_name: windows
+            artifact_path: |
+              dist/app/*.zip
+              dist/app/*.exe
+          - os: macos-15
+            env:
+              SDKROOT: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+            cmd: npm run buildMacIntel
+            artifact_name: macos-x64
+            artifact_path: dist/app/*.zip
+          - os: macos-15
+            env:
+              SDKROOT: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+            cmd: npm run buildMacArm
+            artifact_name: macos-arm64
+            artifact_path: dist/app/*.zip
+    env:
+      SDKROOT: ${{ matrix.env.SDKROOT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 25
+      - run: npm install --omit=optional
+      - name: Build ${{ matrix.artifact_name }}
+        run: ${{ matrix.cmd }}
+      - name: Upload ${{ matrix.artifact_name }} artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-artifact
+          path: ${{ matrix.artifact_path }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 25
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+      - name: Get Version
+        id: version
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            artifacts/linux-deb/**/*.deb
+            artifacts/linux-rpm/**/*.rpm
+            artifacts/linux-appimage/**/*.AppImage
+            artifacts/windows/**/*.zip
+            artifacts/windows/**/*.exe
+            artifacts/macos-x64/**/*.zip
+            artifacts/macos-arm64/**/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

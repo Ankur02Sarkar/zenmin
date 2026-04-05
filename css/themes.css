@@ -1,0 +1,543 @@
+/* === ZenMin Glassmorphism Theme System === */
+
+:root {
+    --theme-primary: #0077b6;
+    --theme-secondary: #00b4d8;
+    --theme-accent: #48cae4;
+    --theme-gradient: linear-gradient(135deg, #0077b6, #00b4d8, #48cae4);
+    --theme-glass-bg: rgba(255, 255, 255, 0.72);
+    --theme-glass-bg-strong: rgba(255, 255, 255, 0.85);
+    --theme-glass-border: rgba(255, 255, 255, 0.25);
+    --theme-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --theme-text: #1a1a2e;
+    --theme-text-secondary: #555;
+    --theme-surface: rgba(255, 255, 255, 0.6);
+    --theme-hover: rgba(0, 119, 182, 0.08);
+    --theme-active: rgba(0, 119, 182, 0.15);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #e0f7fa 0%,
+        #b2ebf2 30%,
+        #80deea 60%,
+        #4dd0e1 100%
+    );
+    transition: all 0.4s ease;
+}
+
+/* === Ocean Blue Theme (default) === */
+body.theme-ocean {
+    --theme-primary: #0077b6;
+    --theme-secondary: #00b4d8;
+    --theme-accent: #48cae4;
+    --theme-gradient: linear-gradient(135deg, #0077b6, #00b4d8, #48cae4);
+    --theme-glass-bg: rgba(255, 255, 255, 0.72);
+    --theme-glass-bg-strong: rgba(255, 255, 255, 0.85);
+    --theme-glass-border: rgba(255, 255, 255, 0.25);
+    --theme-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --theme-text: #1a1a2e;
+    --theme-text-secondary: #555;
+    --theme-surface: rgba(255, 255, 255, 0.6);
+    --theme-hover: rgba(0, 119, 182, 0.08);
+    --theme-active: rgba(0, 119, 182, 0.15);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #e0f7fa 0%,
+        #b2ebf2 30%,
+        #80deea 60%,
+        #4dd0e1 100%
+    );
+}
+
+/* === Sunset Spectrum Theme === */
+body.theme-sunset {
+    --theme-primary: #e63946;
+    --theme-secondary: #f77f00;
+    --theme-accent: #fcbf49;
+    --theme-gradient: linear-gradient(
+        135deg,
+        #e63946,
+        #f77f00,
+        #fcbf49,
+        #2a9d8f
+    );
+    --theme-glass-bg: rgba(255, 255, 255, 0.72);
+    --theme-glass-bg-strong: rgba(255, 255, 255, 0.85);
+    --theme-glass-border: rgba(255, 255, 255, 0.28);
+    --theme-glass-shadow: 0 8px 32px rgba(230, 57, 70, 0.1);
+    --theme-text: #2b2d42;
+    --theme-text-secondary: #555;
+    --theme-surface: rgba(255, 255, 255, 0.6);
+    --theme-hover: rgba(230, 57, 70, 0.08);
+    --theme-active: rgba(230, 57, 70, 0.15);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #fce4ec 0%,
+        #ffccbc 30%,
+        #fff9c4 60%,
+        #c8e6c9 100%
+    );
+}
+
+/* === Royal Elegance Theme === */
+body.theme-royal {
+    --theme-primary: #7b2ff7;
+    --theme-secondary: #9d4edd;
+    --theme-accent: #c9a227;
+    --theme-gradient: linear-gradient(135deg, #7b2ff7, #9d4edd, #c9a227);
+    --theme-glass-bg: rgba(255, 255, 255, 0.72);
+    --theme-glass-bg-strong: rgba(255, 255, 255, 0.85);
+    --theme-glass-border: rgba(255, 255, 255, 0.22);
+    --theme-glass-shadow: 0 8px 32px rgba(123, 47, 247, 0.1);
+    --theme-text: #1a1a2e;
+    --theme-text-secondary: #555;
+    --theme-surface: rgba(255, 255, 255, 0.6);
+    --theme-hover: rgba(123, 47, 247, 0.08);
+    --theme-active: rgba(123, 47, 247, 0.15);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #f3e5f5 0%,
+        #e1bee7 30%,
+        #fff8e1 60%,
+        #f3e5f5 100%
+    );
+}
+
+/* === Dark Mode Overrides === */
+body.dark-mode {
+    --theme-glass-bg: rgba(30, 30, 46, 0.82);
+    --theme-glass-bg-strong: rgba(30, 30, 46, 0.92);
+    --theme-glass-border: rgba(255, 255, 255, 0.08);
+    --theme-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --theme-text: #e0e0e0;
+    --theme-text-secondary: #aaa;
+    --theme-surface: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode.theme-ocean {
+    --theme-hover: rgba(0, 180, 216, 0.12);
+    --theme-active: rgba(0, 180, 216, 0.22);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #0d1b2a 0%,
+        #1b263b 30%,
+        #0a1628 60%,
+        #1a2a3a 100%
+    );
+}
+
+body.dark-mode.theme-sunset {
+    --theme-hover: rgba(247, 127, 0, 0.12);
+    --theme-active: rgba(247, 127, 0, 0.22);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #1a1a2e 0%,
+        #2d1b0e 30%,
+        #1a2a1a 60%,
+        #1a1a2e 100%
+    );
+}
+
+body.dark-mode.theme-royal {
+    --theme-hover: rgba(157, 78, 221, 0.12);
+    --theme-active: rgba(157, 78, 221, 0.22);
+    --theme-ntp-bg: linear-gradient(
+        135deg,
+        #1a0a2e 0%,
+        #16062b 30%,
+        #1a1a0e 60%,
+        #1a0a2e 100%
+    );
+}
+
+/* === Glassmorphism Navbar === */
+
+body.theme-ocean #navbar,
+body.theme-sunset #navbar,
+body.theme-royal #navbar {
+    background: var(--theme-glass-bg-strong) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--theme-glass-border);
+    color: var(--theme-text) !important;
+}
+
+body.theme-ocean #navbar:before,
+body.theme-sunset #navbar:before,
+body.theme-royal #navbar:before {
+    background: transparent !important;
+}
+
+body.theme-ocean .tab-item,
+body.theme-sunset .tab-item,
+body.theme-royal .tab-item {
+    background: transparent;
+    color: var(--theme-text-secondary);
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+body.theme-ocean .tab-item:hover,
+body.theme-sunset .tab-item:hover,
+body.theme-royal .tab-item:hover {
+    background: var(--theme-hover);
+}
+
+body.theme-ocean .tab-item.active,
+body.theme-sunset .tab-item.active,
+body.theme-royal .tab-item.active {
+    background: var(--theme-active);
+    color: var(--theme-text);
+}
+
+/* themed tab dividers */
+body.theme-ocean .tab-item:not(:last-child),
+body.theme-sunset .tab-item:not(:last-child),
+body.theme-royal .tab-item:not(:last-child) {
+    border-right-color: var(--theme-glass-border);
+}
+
+body.theme-ocean .tab-item.active:not(:only-child)::after,
+body.theme-sunset .tab-item.active:not(:only-child)::after,
+body.theme-royal .tab-item.active:not(:only-child)::after {
+    background: var(--theme-primary);
+}
+
+body.theme-ocean .navbar-action-button,
+body.theme-sunset .navbar-action-button,
+body.theme-royal .navbar-action-button {
+    color: var(--theme-text);
+}
+
+body.theme-ocean .navbar-action-button:hover,
+body.theme-sunset .navbar-action-button:hover,
+body.theme-royal .navbar-action-button:hover {
+    background: var(--theme-hover);
+}
+
+/* === Glassmorphism Searchbar === */
+
+body.theme-ocean #searchbar,
+body.theme-sunset #searchbar,
+body.theme-royal #searchbar {
+    background: var(--theme-glass-bg-strong) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--theme-glass-border);
+    color: var(--theme-text) !important;
+}
+
+/* === Glassmorphism Download Bar === */
+
+body.theme-ocean #download-bar,
+body.theme-sunset #download-bar,
+body.theme-royal #download-bar {
+    background: var(--theme-glass-bg-strong);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--theme-glass-border);
+}
+
+/* === Glassmorphism Task Overlay === */
+
+body.theme-ocean #task-overlay,
+body.theme-sunset #task-overlay,
+body.theme-royal #task-overlay {
+    background: var(--theme-glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+}
+
+/* === Hamburger Dropdown Glass === */
+
+#hamburger-dropdown {
+    position: fixed;
+    top: calc(36px + var(--control-space-top, 0px));
+    right: 4px;
+    min-width: 220px;
+    background: var(--theme-glass-bg-strong);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--theme-glass-border);
+    border-radius: 10px;
+    box-shadow:
+        var(--theme-glass-shadow),
+        0 4px 24px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    padding: 6px 0;
+    overflow: hidden;
+    animation: hm-dropdown-in 0.15s ease-out;
+}
+
+@keyframes hm-dropdown-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Backdrop overlay behind dropdown */
+#hamburger-dropdown:not([hidden])::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.08);
+    z-index: -1;
+    pointer-events: none;
+}
+
+body.dark-mode #hamburger-dropdown:not([hidden])::before {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.hm-section {
+    padding: 2px 0;
+}
+
+.hm-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.875em;
+    color: var(--theme-text);
+    transition: background 0.15s;
+    user-select: none;
+}
+
+.hm-item:hover {
+    background: var(--theme-hover);
+}
+
+.hm-item:active {
+    background: var(--theme-active);
+}
+
+.hm-item i {
+    font-size: 1.15em;
+    opacity: 0.7;
+}
+
+.hm-divider {
+    height: 1px;
+    background: var(--theme-glass-border);
+    margin: 4px 12px;
+}
+
+.hm-label {
+    font-size: 0.75em;
+    color: var(--theme-text-secondary);
+    padding: 6px 16px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.hm-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.8125em;
+    color: var(--theme-text-secondary);
+    transition: background 0.15s;
+}
+
+.hm-suggestion:hover {
+    background: var(--theme-hover);
+    color: var(--theme-text);
+}
+
+/* === NTP Glassmorphism === */
+
+#ntp-main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 90%;
+    max-width: 620px;
+    z-index: 2;
+    text-align: center;
+}
+
+#ntp-greeting {
+    font-size: 1.75em;
+    font-weight: 300;
+    color: var(--theme-text);
+    margin-bottom: 1.25em;
+    opacity: 0.85;
+}
+
+#ntp-search-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+#ntp-search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    color: var(--theme-text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+#ntp-search-input {
+    width: 100%;
+    padding: 14px 20px 14px 44px;
+    font-size: 1em;
+    border: 1px solid var(--theme-glass-border);
+    border-radius: 12px;
+    background: var(--theme-glass-bg-strong);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--theme-glass-shadow);
+    color: var(--theme-text);
+    outline: none;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+#ntp-search-input:focus {
+    border-color: var(--theme-primary);
+    box-shadow:
+        0 0 0 3px rgba(0, 119, 182, 0.15),
+        var(--theme-glass-shadow);
+}
+
+#ntp-search-input::placeholder {
+    color: var(--theme-text-secondary);
+    opacity: 0.7;
+}
+
+#ntp-suggestions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+}
+
+.ntp-suggestion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 8px;
+    border-radius: 10px;
+    background: var(--theme-glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--theme-glass-border);
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        transform 0.15s,
+        box-shadow 0.2s;
+    text-decoration: none;
+    color: var(--theme-text);
+    overflow: hidden;
+}
+
+.ntp-suggestion-card:hover {
+    background: var(--theme-glass-bg-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.ntp-suggestion-card:active {
+    transform: translateY(0);
+}
+
+.ntp-suggestion-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--theme-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ntp-suggestion-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.ntp-suggestion-title {
+    font-size: 0.75em;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    color: var(--theme-text-secondary);
+}
+
+/* NTP background gradient for themed pages */
+body.is-ntp.theme-ocean #ntp-content,
+body.is-ntp.theme-sunset #ntp-content,
+body.is-ntp.theme-royal #ntp-content {
+    background: var(--theme-ntp-bg);
+}
+
+body.is-ntp:not(.ntp-has-background) #ntp-content {
+    background: var(--theme-ntp-bg);
+}
+
+/* === Find In Page Glass === */
+
+body.theme-ocean #findinpage-bar,
+body.theme-sunset #findinpage-bar,
+body.theme-royal #findinpage-bar {
+    background: var(--theme-glass-bg-strong) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: var(--theme-text) !important;
+}
+
+/* === Swipe Gesture Edge Indicators === */
+
+#navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px var(--theme-primary, #0077b6);
+    transition: box-shadow 0.15s ease-out;
+}
+
+#navbar:not(.swipe-indicator-left):not(.swipe-indicator-right) {
+    box-shadow: none;
+    transition: box-shadow 0.4s ease-out;
+}
+
+#navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px var(--theme-primary, #0077b6);
+    transition: box-shadow 0.15s ease-out;
+}
+
+/* Theme-specific swipe indicator colors */
+body.theme-sunset #navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px #e63946;
+}
+body.theme-sunset #navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px #e63946;
+}
+body.theme-royal #navbar.swipe-indicator-left {
+    box-shadow: inset 4px 0 12px -2px #7b2ff7;
+}
+body.theme-royal #navbar.swipe-indicator-right {
+    box-shadow: inset -4px 0 12px -2px #7b2ff7;
+}
