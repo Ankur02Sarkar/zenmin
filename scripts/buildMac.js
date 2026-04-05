@@ -22,7 +22,7 @@ function toArch(platform) {
 
 require("./createPackage.js")("mac", { arch: toArch(platform) }).then(
     (packagePath) => {
-        if (platform === "arm64") {
+        if (platform === "arm64" && process.env.CI !== "true") {
             execSync(
                 "codesign -s - -a arm64 -f --deep " + packagePath + "/Min.app",
             );
