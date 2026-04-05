@@ -609,6 +609,63 @@ webviews.bindIPC("clearAllHistory", (tabId) => {
     places.deleteAllHistory();
 });
 
+// Third Eye IPC bridge
+webviews.bindIPC("thirdEye-getData", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    ipc.invoke("thirdEye-getData").then(function (data) {
+        webviews.callAsync(tabId, "send", ["thirdEye-receiveData", data]);
+    });
+});
+
+webviews.bindIPC("thirdEye-action", (tabId, args) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var payload = args[0];
+    var action = payload.action;
+    var data = payload.data;
+
+    var ipcAction;
+    if (action === "setTimer" || action === "extendTimer") {
+        ipcAction = "thirdEye-setTimer";
+    } else if (action === "addURL") {
+        ipcAction = "thirdEye-addURL";
+    } else if (action === "removeURL") {
+        ipcAction = "thirdEye-removeURL";
+    } else if (action === "addKeyword") {
+        ipcAction = "thirdEye-addKeyword";
+    } else if (action === "removeKeyword") {
+        ipcAction = "thirdEye-removeKeyword";
+    } else if (action === "toggleAdult") {
+        ipcAction = "thirdEye-toggleAdult";
+    } else {
+        return;
+    }
+
+    ipc.invoke(ipcAction, data).then(function (result) {
+        webviews.callAsync(tabId, "send", [
+            "thirdEye-response",
+            { action: action, result: result },
+        ]);
+    });
+});
+
+// Forward live updates to Third Eye pages
+ipc.on("thirdEyeDataUpdate", (event, data) => {
+    tasks.forEach((task) => {
+        task.tabs.forEach((tab) => {
+            if (tab.url && tab.url.includes("thirdeye")) {
+                try {
+                    webviews.callAsync(tab.id, "send", [
+                        "thirdEye-liveUpdate",
+                        data,
+                    ]);
+                } catch (e) {
+                    // webview might not exist
+                }
+            }
+        });
+    });
+});
+
 ipc.on("view-event", (e, args) => {
     webviews.emitEvent(args.event, args.tabId, args.args);
 });

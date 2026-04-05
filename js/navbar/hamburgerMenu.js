@@ -106,6 +106,12 @@ var hamburgerMenu = {
             case "bookmarks":
                 tabEditor.show(tabs.getSelected(), "!bookmarks ");
                 break;
+            case "thirdeye":
+                browserUI.addTab(
+                    tabs.add({ url: urlParser.parse("zenmin://thirdeye") }),
+                    { enterEditMode: false },
+                );
+                break;
         }
     },
     initialize: function () {

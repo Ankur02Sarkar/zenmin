@@ -500,14 +500,6 @@ body.is-ntp:not(.ntp-has-background) #ntp-content {
     background: var(--theme-ntp-bg);
 }
 
-/* === Switch Task Button Glass === */
-
-body.theme-ocean #switch-task-button,
-body.theme-sunset #switch-task-button,
-body.theme-royal #switch-task-button {
-    color: var(--theme-text);
-}
-
 /* === Find In Page Glass === */
 
 body.theme-ocean #findinpage-bar,

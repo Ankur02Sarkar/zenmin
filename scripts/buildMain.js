@@ -24,6 +24,7 @@ const modules = [
     "main/keychainService.js",
     "js/util/proxy.js",
     "main/themeMain.js",
+    "main/thirdEye.js",
 ];
 
 function buildMain() {

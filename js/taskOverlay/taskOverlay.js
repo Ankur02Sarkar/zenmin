@@ -13,7 +13,7 @@ var Sortable = require("sortablejs");
 const createTaskContainer = require("taskOverlay/taskOverlayBuilder.js");
 
 var taskContainer = document.getElementById("task-area");
-var taskSwitcherButton = document.getElementById("switch-task-button");
+var taskSwitcherButton = document.getElementById("switch-task-button"); // may be null if removed
 var addTaskButton = document.getElementById("add-task");
 var addTaskLabel = addTaskButton.querySelector("span");
 var taskOverlayNavbar = document.getElementById("task-overlay-navbar");
@@ -210,7 +210,7 @@ var taskOverlay = {
         document.getElementById("task-search-input").value = "";
 
         this.isShown = true;
-        taskSwitcherButton.classList.add("active");
+        if (taskSwitcherButton) taskSwitcherButton.classList.add("active");
 
         taskOverlay.render();
 
@@ -302,7 +302,8 @@ var taskOverlay = {
             browserUI.switchToTask(tasks.getSelected().id);
             browserUI.switchToTab(tabs.getSelected());
 
-            taskSwitcherButton.classList.remove("active");
+            if (taskSwitcherButton)
+                taskSwitcherButton.classList.remove("active");
         }
     },
 
@@ -457,12 +458,13 @@ var taskOverlay = {
         keybindings.defineShortcut("addTask", addTaskFromMenu);
         ipcRenderer.on("addTask", addTaskFromMenu); // for menu item
 
-        taskSwitcherButton.title = l("viewTasks");
+        if (taskSwitcherButton) {
+            taskSwitcherButton.title = l("viewTasks");
+            taskSwitcherButton.addEventListener("click", () => {
+                taskOverlay.toggle();
+            });
+        }
         addTaskLabel.textContent = l("newTask");
-
-        taskSwitcherButton.addEventListener("click", () => {
-            taskOverlay.toggle();
-        });
 
         addTaskButton.addEventListener("click", (e) => {
             browserUI.addTask();

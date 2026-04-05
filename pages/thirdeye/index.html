@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Third Eye - ZenMin</title>
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="thirdeye.css" />
+  </head>
+
+  <body>
+    <div class="hero">
+      <div class="container">
+        <span class="hero-icon">&#128065;</span>
+        <h2>Third Eye</h2>
+      </div>
+    </div>
+
+    <!-- Status banner -->
+    <div class="status-banner status-inactive" id="status-banner">
+      <span class="status-label" id="status-label">Status: INACTIVE</span>
+      <span class="status-timer" id="status-timer"></span>
+    </div>
+
+    <!-- Timer section -->
+    <div class="section" id="timer-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="section-title-icon">&#9201;</span>
+          Set Timer
+        </h3>
+      </div>
+      <div class="timer-inputs">
+        <div class="timer-field">
+          <label for="timer-date">Date</label>
+          <input type="date" id="timer-date" />
+        </div>
+        <div class="timer-field">
+          <label for="timer-time">Time</label>
+          <input type="time" id="timer-time" />
+        </div>
+        <div class="timer-actions">
+          <button class="btn btn-set" id="btn-set-timer" type="button">
+            Set Timer
+          </button>
+          <button
+            class="btn btn-extend"
+            id="btn-extend-timer"
+            type="button"
+            style="display: none"
+          >
+            Extend Timer
+          </button>
+        </div>
+      </div>
+      <div class="msg msg-error" id="timer-error"></div>
+      <div class="msg msg-success" id="timer-success"></div>
+    </div>
+
+    <!-- Blocked URLs section -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="section-title-icon">&#128279;</span>
+          Blocked URLs
+        </h3>
+      </div>
+      <div class="input-row">
+        <input
+          type="text"
+          id="url-input"
+          placeholder="Enter URL or domain (e.g. facebook.com)"
+        />
+        <button class="btn btn-add" id="btn-add-url" type="button">Add</button>
+      </div>
+      <div class="msg msg-error" id="url-error"></div>
+      <div class="list-container" id="url-list">
+        <div class="list-empty">No blocked URLs</div>
+      </div>
+    </div>
+
+    <!-- Blocked Keywords section -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <span class="section-title-icon">&#128273;</span>
+          Blocked Keywords
+        </h3>
+      </div>
+      <div class="input-row">
+        <input
+          type="text"
+          id="keyword-input"
+          placeholder="Enter keyword to block"
+        />
+        <button class="btn btn-add" id="btn-add-keyword" type="button">
+          Add
+        </button>
+      </div>
+      <div class="msg msg-error" id="keyword-error"></div>
+      <div class="list-container" id="keyword-list">
+        <div class="list-empty">No blocked keywords</div>
+      </div>
+    </div>
+
+    <!-- Adult Site Prevention -->
+    <div class="section">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Adult Site Prevention</div>
+          <div class="toggle-sublabel">
+            Block access to known adult websites
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="adult-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <script src="../../js/util/settings/settingsContent.js"></script>
+    <script src="../../js/util/theme.js"></script>
+    <script src="thirdeye.js"></script>
+  </body>
+</html>

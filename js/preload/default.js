@@ -93,6 +93,18 @@ window.addEventListener("message", (e) => {
     if (e.data?.message === "clearAllHistory") {
         ipc.send("clearAllHistory");
     }
+
+    // Third Eye IPC bridge
+    if (e.data?.message === "thirdEye-getData") {
+        ipc.send("thirdEye-getData");
+    }
+
+    if (e.data?.message === "thirdEye-action") {
+        ipc.send("thirdEye-action", {
+            action: e.data.action,
+            data: e.data.data,
+        });
+    }
 });
 
 ipc.on("receiveDownloadsListing", function (e, data) {
@@ -108,6 +120,38 @@ ipc.on("receiveHistoryData", function (e, data) {
     if (window.location.toString().startsWith("zenmin://")) {
         window.postMessage(
             { message: "receiveHistoryData", items: data },
+            window.location.toString(),
+        );
+    }
+});
+
+// Third Eye IPC responses
+ipc.on("thirdEye-receiveData", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "thirdEye-receiveData", data: data },
+            window.location.toString(),
+        );
+    }
+});
+
+ipc.on("thirdEye-response", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            {
+                message: "thirdEye-response",
+                action: data.action,
+                result: data.result,
+            },
+            window.location.toString(),
+        );
+    }
+});
+
+ipc.on("thirdEye-liveUpdate", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "thirdEye-liveUpdate", data: data },
             window.location.toString(),
         );
     }

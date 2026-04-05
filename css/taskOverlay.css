@@ -48,24 +48,6 @@
     }
 }
 
-#switch-task-button {
-    position: absolute;
-    top: var(--control-space-top);
-    right: var(--control-space-right);
-    z-index: 4;
-    padding: 0.5em;
-}
-
-#switch-task-button.active {
-    color: royalblue !important;
-}
-
-#switch-task-button svg {
-    width: 0.8em;
-    height: 0.8em;
-    display: block;
-    margin-top: 2px;
-}
 #task-overlay {
     display: flex;
     flex-direction: column;
@@ -302,10 +284,6 @@ body:not(.touch)
 body.dark-mode #task-overlay {
     background-color: rgb(40, 44, 52) !important;
     color: lightgrey;
-}
-
-.dark-mode #switch-task-button {
-    color: dodgerblue;
 }
 
 .tab-drop-placeholder,
