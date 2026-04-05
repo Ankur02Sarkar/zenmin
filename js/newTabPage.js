@@ -92,7 +92,7 @@ var newTabPage = {
             return;
         }
 
-        fetch("https://ipinfo.io/json")
+        fetch("https://ipinfo.io/json?token=2751c7337c84da")
             .then(function (res) {
                 return res.json();
             })
