@@ -93,6 +93,41 @@
         margin: 0.5em 0 1.5em;
       }
 
+      .reason-section {
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.2);
+        border-radius: 10px;
+        padding: 1em 1.2em;
+        margin: 1em 0;
+        text-align: left;
+      }
+
+      .reason-label {
+        font-size: 0.75em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.6;
+        margin-bottom: 0.4em;
+        color: #ff6b6b;
+      }
+
+      .reason-value {
+        font-size: 0.95em;
+        color: #ff8787;
+        font-weight: 500;
+      }
+
+      .reason-type {
+        display: inline-block;
+        background: rgba(255, 107, 107, 0.15);
+        padding: 0.2em 0.6em;
+        border-radius: 4px;
+        font-size: 0.7em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5em;
+      }
+
       .timer-section {
         background: rgba(255, 255, 255, 0.06);
         border-radius: 12px;
@@ -184,6 +219,12 @@
       <div class="blocked-title">Access Blocked</div>
       <div class="blocked-subtitle">This page is currently disabled</div>
 
+      <div class="reason-section" id="reason-section" style="display: none">
+        <div class="reason-type" id="reason-type"></div>
+        <div class="reason-label">What triggered the block</div>
+        <div class="reason-value" id="reason-value"></div>
+      </div>
+
       <div class="timer-section" id="timer-section">
         <div class="timer-label">Time remaining</div>
         <div class="timer-value" id="timer-value">--:--:--</div>
@@ -239,6 +280,43 @@
 
       // Show blocked URL
       document.getElementById("blocked-url").textContent = blockedUrl;
+
+      // Show reason for blocking
+      function getReasonText(reasonType, matchText) {
+        var reasonTexts = {
+          url: "This specific URL is in your blocklist",
+          domain: "This website's domain is in your blocklist",
+          keyword_url:
+            "The URL contains a blocked keyword: " +
+            (matchText ? '"' + matchText + '"' : ""),
+          keyword_content:
+            "The page content contains a blocked keyword: " +
+            (matchText ? '"' + matchText + '"' : ""),
+          adult: "This website is blocked by Adult Site Prevention",
+        };
+        return reasonTexts[reasonType] || "Blocked by Third Eye";
+      }
+
+      function getReasonTypeLabel(reasonType) {
+        var typeLabels = {
+          url: "URL Block",
+          domain: "Domain Block",
+          keyword_url: "Keyword in URL",
+          keyword_content: "Keyword in Page",
+          adult: "Adult Site Prevention",
+        };
+        return typeLabels[reasonType] || "Blocked";
+      }
+
+      if (reason) {
+        var reasonSection = document.getElementById("reason-section");
+        var reasonTypeEl = document.getElementById("reason-type");
+        var reasonValueEl = document.getElementById("reason-value");
+
+        reasonSection.style.display = "block";
+        reasonTypeEl.textContent = getReasonTypeLabel(reason);
+        reasonValueEl.textContent = getReasonText(reason, match);
+      }
 
       // Show random quote
       var randomQuote = quotes[Math.floor(Math.random() * quotes.length)];

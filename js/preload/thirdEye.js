@@ -14,7 +14,37 @@
     var lastScanResult = null;
     var scanEnabled = false;
     var blockedKeywords = [];
+    var whitelistedDomains = [];
     var observer = null;
+
+    function isCurrentPageWhitelisted() {
+        try {
+            var hostname = window.location.hostname
+                .toLowerCase()
+                .replace(/^www\./, "");
+            for (var i = 0; i < whitelistedDomains.length; i++) {
+                var entry = whitelistedDomains[i];
+                if (entry.startsWith("regex:")) {
+                    try {
+                        var pattern = entry.substring(6);
+                        var regex = new RegExp(pattern, "i");
+                        if (regex.test(hostname)) {
+                            return true;
+                        }
+                    } catch (e) {
+                        // invalid regex, skip
+                    }
+                } else {
+                    if (hostname === entry || hostname.endsWith("." + entry)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+        return false;
+    }
 
     // Fetch blocking rules from main process
     function fetchRules() {
@@ -23,6 +53,7 @@
                 if (rules && rules.active && rules.keywords.length > 0) {
                     scanEnabled = true;
                     blockedKeywords = rules.keywords;
+                    whitelistedDomains = rules.whitelist || [];
                     // Do initial scan once DOM is ready
                     if (
                         document.readyState === "complete" ||
@@ -52,6 +83,11 @@
 
     function scanContent() {
         if (!scanEnabled || blockedKeywords.length === 0) {
+            return;
+        }
+
+        // Skip scanning for whitelisted domains
+        if (isCurrentPageWhitelisted()) {
             return;
         }
 
@@ -145,11 +181,13 @@
         if (rules && rules.active && rules.keywords.length > 0) {
             scanEnabled = true;
             blockedKeywords = rules.keywords;
+            whitelistedDomains = rules.whitelist || [];
             debouncedScan();
             startObserving();
         } else {
             scanEnabled = false;
             blockedKeywords = [];
+            whitelistedDomains = [];
             stopObserving();
         }
     });
