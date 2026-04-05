@@ -73,4 +73,42 @@ window.addEventListener("message", (e) => {
     if (e.data?.message === "downloadFile") {
         ipc.send("downloadFile", e.data.url);
     }
+
+    if (e.data?.message === "getDownloadsListing") {
+        ipc.send("getDownloadsListing");
+    }
+
+    if (e.data?.message === "openPath") {
+        ipc.send("openPath", e.data.path);
+    }
+
+    if (e.data?.message === "getHistoryData") {
+        ipc.send("getHistoryData");
+    }
+
+    if (e.data?.message === "deleteHistoryItem") {
+        ipc.send("deleteHistoryItem", e.data.url);
+    }
+
+    if (e.data?.message === "clearAllHistory") {
+        ipc.send("clearAllHistory");
+    }
+});
+
+ipc.on("receiveDownloadsListing", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "receiveDownloadsListing", files: data },
+            window.location.toString(),
+        );
+    }
+});
+
+ipc.on("receiveHistoryData", function (e, data) {
+    if (window.location.toString().startsWith("zenmin://")) {
+        window.postMessage(
+            { message: "receiveHistoryData", items: data },
+            window.location.toString(),
+        );
+    }
 });

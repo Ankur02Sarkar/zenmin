@@ -5,7 +5,7 @@ if (typeof require !== "undefined") {
 function enableDarkMode() {
     document.body.classList.add("dark-mode");
     window.isDarkMode = true;
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function () {
         window.dispatchEvent(new CustomEvent("themechange"));
     });
 }
@@ -13,9 +13,23 @@ function enableDarkMode() {
 function disableDarkMode() {
     document.body.classList.remove("dark-mode");
     window.isDarkMode = false;
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function () {
         window.dispatchEvent(new CustomEvent("themechange"));
     });
+}
+
+function applyGlassTheme(theme) {
+    document.body.classList.remove(
+        "theme-ocean",
+        "theme-sunset",
+        "theme-royal",
+    );
+    if (theme && theme !== "default") {
+        document.body.classList.add("theme-" + theme);
+    } else {
+        // default is ocean
+        document.body.classList.add("theme-ocean");
+    }
 }
 
 function initialize() {
@@ -27,10 +41,22 @@ function initialize() {
         }
     }
     settings.listen("darkThemeIsActive", themeChanged);
+
+    // glass theme
+    settings.listen("glassTheme", function (value) {
+        applyGlassTheme(value);
+    });
+
+    // apply default theme on startup if no setting exists
+    settings.get("glassTheme", function (value) {
+        if (!value) {
+            applyGlassTheme("ocean");
+        }
+    });
 }
 
 if (typeof module !== "undefined") {
-    module.exports = { initialize };
+    module.exports = { initialize: initialize };
 } else {
     initialize();
 }

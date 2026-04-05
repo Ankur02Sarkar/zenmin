@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -147,6 +147,44 @@
           data-label="newTabAction"
           tabindex="-1"
         ></button>
+        <button
+          id="hamburger-menu-button"
+          class="navbar-action-button i carbon:menu"
+          tabindex="-1"
+        ></button>
+      </div>
+    </div>
+
+    <div id="hamburger-dropdown" hidden>
+      <div class="hm-section">
+        <div class="hm-item" data-action="allTabs">
+          <i class="i carbon:switcher"></i><span>All Tabs</span>
+        </div>
+        <div class="hm-item" data-action="searchTabs">
+          <i class="i carbon:search"></i><span>Search Tabs</span>
+        </div>
+      </div>
+      <div class="hm-divider"></div>
+      <div class="hm-section">
+        <div class="hm-item" data-action="history">
+          <i class="i carbon:time"></i><span>History</span>
+        </div>
+        <div class="hm-item" data-action="downloads">
+          <i class="i carbon:download"></i><span>Downloads</span>
+        </div>
+        <div class="hm-item" data-action="settings">
+          <i class="i carbon:settings"></i><span>Settings</span>
+        </div>
+      </div>
+      <div class="hm-divider"></div>
+      <div class="hm-section">
+        <div class="hm-item" data-action="bookmarks">
+          <i class="i carbon:bookmark"></i><span>Bookmarks</span>
+        </div>
+      </div>
+      <div class="hm-divider"></div>
+      <div class="hm-section" id="hm-suggestions">
+        <div class="hm-label">Suggested</div>
       </div>
     </div>
 
@@ -202,6 +240,19 @@
       <img id="webview-placeholder" hidden aria-hidden="true" />
       <div id="ntp-content">
         <img id="ntp-background" hidden />
+        <div id="ntp-main">
+          <div id="ntp-greeting"></div>
+          <div id="ntp-search-container">
+            <i class="i carbon:search" id="ntp-search-icon"></i>
+            <input
+              type="text"
+              id="ntp-search-input"
+              placeholder="Search or enter URL"
+              spellcheck="false"
+            />
+          </div>
+          <div id="ntp-suggestions"></div>
+        </div>
         <div id="ntp-background-controls">
           <button id="ntp-image-remove">
             <i class="i carbon:trash-can"></i>

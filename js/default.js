@@ -147,6 +147,7 @@ require("windowControls.js").initialize();
 require("navbar/menuButton.js").initialize();
 
 require("navbar/addTabButton.js").initialize();
+require("navbar/hamburgerMenu.js").initialize();
 require("navbar/tabContextMenu.js").initialize();
 require("navbar/tabActivity.js").initialize();
 require("navbar/tabColor.js").initialize();

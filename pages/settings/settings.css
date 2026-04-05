@@ -201,3 +201,116 @@ html {
 .danger-button:hover {
     background-color: #c82333;
 }
+
+/* Toggle group for light/dark/system */
+.toggle-group {
+    display: inline-flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    margin-left: 0.5em;
+}
+
+.toggle-btn {
+    padding: 0.4em 1em;
+    font-size: 0.9em;
+    cursor: pointer;
+    background: #f5f5f5;
+    color: #333;
+    border: none;
+    border-right: 1px solid #ccc;
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+.toggle-btn:last-child {
+    border-right: none;
+}
+
+.toggle-btn:hover {
+    background: #e0e0e0;
+}
+
+.toggle-btn.active {
+    background: #0077b6;
+    color: white;
+}
+
+body.dark-mode .toggle-btn {
+    background: #3a3a4a;
+    color: #ccc;
+    border-color: #555;
+}
+
+body.dark-mode .toggle-btn:hover {
+    background: #4a4a5a;
+}
+
+body.dark-mode .toggle-btn.active {
+    background: #0077b6;
+    color: white;
+}
+
+body.dark-mode .toggle-group {
+    border-color: #555;
+}
+
+/* Theme selector */
+.theme-selector {
+    display: flex;
+    gap: 12px;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    flex-wrap: wrap;
+}
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition:
+        border-color 0.2s,
+        background 0.2s;
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.theme-option:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.theme-option.selected {
+    border-color: #0077b6;
+    background: rgba(0, 119, 182, 0.08);
+}
+
+body.dark-mode .theme-option {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .theme-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .theme-option.selected {
+    border-color: #48cae4;
+    background: rgba(72, 202, 228, 0.1);
+}
+
+.theme-swatch {
+    width: 48px;
+    height: 32px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.theme-option span {
+    font-size: 0.75em;
+    color: inherit;
+    opacity: 0.8;
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -80,38 +80,72 @@
     <div class="settings-container" id="appearance-settings-container">
       <h3 data-string="settingsAppearanceHeading"></h3>
 
-      <label
-        for="dark-mode-container"
-        data-string="settingsEnableDarkMode"
-      ></label>
-      <div class="setting-section" id="dark-mode-container">
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-never" />
-          <label
-            for="dark-mode-never"
-            data-string="settingsDarkModeNever"
-          ></label>
+      <div class="setting-section">
+        <label>Mode:</label>
+        <div id="dark-mode-toggle" class="toggle-group">
+          <button
+            type="button"
+            class="toggle-btn"
+            id="toggle-light-mode"
+            data-value="light"
+          >
+            Light
+          </button>
+          <button
+            type="button"
+            class="toggle-btn"
+            id="toggle-dark-mode"
+            data-value="dark"
+          >
+            Dark
+          </button>
+          <button
+            type="button"
+            class="toggle-btn"
+            id="toggle-system-mode"
+            data-value="system"
+          >
+            System
+          </button>
         </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-night" />
-          <label
-            for="dark-mode-night"
-            data-string="settingsDarkModeNight"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-always" />
-          <label
-            for="dark-mode-always"
-            data-string="settingsDarkModeAlways"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-system" />
-          <label
-            for="dark-mode-system"
-            data-string="settingsDarkModeSystem"
-          ></label>
+      </div>
+
+      <div class="setting-section">
+        <label>Theme:</label>
+        <div id="theme-selector" class="theme-selector">
+          <div class="theme-option" data-theme="ocean">
+            <div
+              class="theme-swatch"
+              style="
+                background: linear-gradient(135deg, #0077b6, #00b4d8, #48cae4);
+              "
+            ></div>
+            <span>Ocean Blue</span>
+          </div>
+          <div class="theme-option" data-theme="sunset">
+            <div
+              class="theme-swatch"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  #e63946,
+                  #f77f00,
+                  #fcbf49,
+                  #2a9d8f
+                );
+              "
+            ></div>
+            <span>Sunset Spectrum</span>
+          </div>
+          <div class="theme-option" data-theme="royal">
+            <div
+              class="theme-swatch"
+              style="
+                background: linear-gradient(135deg, #7b2ff7, #9d4edd, #c9a227);
+              "
+            ></div>
+            <span>Royal Elegance</span>
+          </div>
         </div>
       </div>
 

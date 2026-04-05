@@ -1,25 +1,27 @@
-var places = null;
 var allHistory = [];
 var filteredHistory = [];
 
-const searchInput = document.getElementById("search-input");
-const historyList = document.getElementById("history-list");
-const emptyState = document.getElementById("empty-state");
-const loadingState = document.getElementById("loading-state");
+var searchInput = document.getElementById("search-input");
+var historyList = document.getElementById("history-list");
+var emptyState = document.getElementById("empty-state");
+var loadingState = document.getElementById("loading-state");
+var errorState = document.getElementById("error-state");
+var clearAllButton = document.getElementById("clear-all-button");
+var retryButton = document.getElementById("retry-button");
 
 function formatDate(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
+    var date = new Date(timestamp);
+    var now = new Date();
+    var diff = now - date;
 
-    if (diff < 60000) return l("timeRangeJustNow");
-    if (diff < 3600000) return l("timeRangeMinutes");
-    if (diff < 86400000) return l("timeRangeToday");
-    if (diff < 172800000) return l("timeRangeYesterday");
-    if (diff < 604800000) return l("timeRangeWeek");
-    if (diff < 2592000000) return l("timeRangeMonth");
-    if (diff < 31536000000) return l("timeRangeYear");
-    return l("timeRangeLongerAgo");
+    if (diff < 60000) return "Just now";
+    if (diff < 3600000) return "A few minutes ago";
+    if (diff < 86400000) return "Today";
+    if (diff < 172800000) return "Yesterday";
+    if (diff < 604800000) return "This week";
+    if (diff < 2592000000) return "This month";
+
+    return date.toLocaleDateString();
 }
 
 function renderHistory() {
@@ -34,73 +36,106 @@ function renderHistory() {
 
     var lastDate = "";
 
-    filteredHistory.forEach((item) => {
-        const itemDate = formatDate(item.lastVisit);
+    filteredHistory.forEach(function (item) {
+        var itemDate = formatDate(item.lastVisit);
         if (itemDate !== lastDate) {
-            const heading = document.createElement("div");
+            var heading = document.createElement("div");
             heading.className = "date-heading";
             heading.textContent = itemDate;
             historyList.appendChild(heading);
             lastDate = itemDate;
         }
 
-        const el = document.createElement("div");
+        var el = document.createElement("div");
         el.className = "history-item";
-        el.innerHTML =
-            '<div class="info">' +
-            '<div class="title">' +
-            (item.title || item.url) +
-            "</div>" +
-            '<div class="url">' +
-            item.url +
-            "</div>" +
-            "</div>";
-        el.addEventListener("click", () => {
+
+        var infoEl = document.createElement("div");
+        infoEl.className = "info";
+
+        var titleEl = document.createElement("div");
+        titleEl.className = "title";
+        titleEl.textContent = item.title || item.url;
+
+        var urlEl = document.createElement("div");
+        urlEl.className = "url";
+        urlEl.textContent = item.url;
+
+        infoEl.appendChild(titleEl);
+        infoEl.appendChild(urlEl);
+        el.appendChild(infoEl);
+
+        el.addEventListener("click", function () {
             window.location.href = item.url;
         });
+
         historyList.appendChild(el);
     });
 }
 
 function loadHistory() {
-    if (!places) {
-        places = window.places;
-    }
+    loadingState.hidden = false;
+    emptyState.hidden = true;
+    errorState.hidden = true;
+    historyList.innerHTML = "";
 
-    if (!places) {
-        setTimeout(loadHistory, 500);
-        return;
-    }
+    postMessage({ message: "getHistoryData" });
 
-    places
-        .getHistory()
-        .then((items) => {
+    var timeout = setTimeout(function () {
+        if (!loadingState.hidden) {
             loadingState.hidden = true;
-            allHistory = items || [];
-            allHistory.sort((a, b) => b.lastVisit - a.lastVisit);
-            filteredHistory = allHistory;
-            renderHistory();
-        })
-        .catch((err) => {
-            console.error("Error loading history:", err);
-            loadingState.hidden = true;
-        });
+            errorState.hidden = false;
+        }
+    }, 10000);
+
+    window._historyTimeout = timeout;
 }
 
-searchInput.addEventListener("input", () => {
-    const query = searchInput.value.toLowerCase();
+window.addEventListener("message", function (e) {
+    if (e.data && e.data.message === "receiveHistoryData") {
+        clearTimeout(window._historyTimeout);
+        loadingState.hidden = true;
+        allHistory = e.data.items || [];
+        allHistory.sort(function (a, b) {
+            return b.lastVisit - a.lastVisit;
+        });
+        filteredHistory = allHistory;
+        renderHistory();
+    }
+});
+
+searchInput.addEventListener("input", function () {
+    var query = searchInput.value.toLowerCase();
     if (!query) {
         filteredHistory = allHistory;
     } else {
-        filteredHistory = allHistory.filter(
-            (item) =>
-                (item.title && item.title.toLowerCase().includes(query)) ||
-                item.url.toLowerCase().includes(query),
-        );
+        filteredHistory = allHistory.filter(function (item) {
+            return (
+                (item.title &&
+                    item.title.toLowerCase().indexOf(query) !== -1) ||
+                item.url.toLowerCase().indexOf(query) !== -1
+            );
+        });
     }
     renderHistory();
 });
 
-window.addEventListener("load", () => {
+if (clearAllButton) {
+    clearAllButton.addEventListener("click", function () {
+        if (confirm("Clear all history and browsing data?")) {
+            postMessage({ message: "clearAllHistory" });
+            allHistory = [];
+            filteredHistory = [];
+            renderHistory();
+        }
+    });
+}
+
+if (retryButton) {
+    retryButton.addEventListener("click", function () {
+        loadHistory();
+    });
+}
+
+window.addEventListener("load", function () {
     loadHistory();
 });

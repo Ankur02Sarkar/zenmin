@@ -577,6 +577,38 @@ webviews.bindIPC("downloadFile", (tabId, args) => {
     }
 });
 
+webviews.bindIPC("getDownloadsListing", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    ipc.invoke("getDownloadsListing").then(function (files) {
+        webviews.callAsync(tabId, "send", ["receiveDownloadsListing", files]);
+    });
+});
+
+webviews.bindIPC("openPath", (tabId, args) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    electron.shell.openPath(args[0]);
+});
+
+webviews.bindIPC("getHistoryData", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var places = require("places/places.js");
+    places.getHistory().then(function (items) {
+        webviews.callAsync(tabId, "send", ["receiveHistoryData", items]);
+    });
+});
+
+webviews.bindIPC("deleteHistoryItem", (tabId, args) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var places = require("places/places.js");
+    places.deleteHistory(args[0]);
+});
+
+webviews.bindIPC("clearAllHistory", (tabId) => {
+    if (!urlParser.isInternalURL(tabs.get(tabId).url)) return;
+    var places = require("places/places.js");
+    places.deleteAllHistory();
+});
+
 ipc.on("view-event", (e, args) => {
     webviews.emitEvent(args.event, args.tabId, args.args);
 });

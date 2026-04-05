@@ -219,40 +219,68 @@ for (var contentType in contentTypes) {
     })(contentType);
 }
 
-/* dark mode setting */
-var darkModeNever = document.getElementById("dark-mode-never");
-var darkModeNight = document.getElementById("dark-mode-night");
-var darkModeAlways = document.getElementById("dark-mode-always");
-var darkModeSystem = document.getElementById("dark-mode-system");
+/* dark mode setting - light/dark/system toggle */
+var toggleLightMode = document.getElementById("toggle-light-mode");
+var toggleDarkMode = document.getElementById("toggle-dark-mode");
+var toggleSystemMode = document.getElementById("toggle-system-mode");
 
-// -1 - off ; 0 - auto ; 1 - on
-settings.get("darkMode", (value) => {
-    darkModeNever.checked = value === -1;
-    darkModeNight.checked = value === 0;
-    darkModeAlways.checked = value === 1 || value === true;
-    darkModeSystem.checked =
-        value === 2 || value === undefined || value === false;
+function updateDarkModeToggle(value) {
+    toggleLightMode.classList.remove("active");
+    toggleDarkMode.classList.remove("active");
+    toggleSystemMode.classList.remove("active");
+
+    if (value === 1 || value === true) {
+        toggleDarkMode.classList.add("active");
+    } else if (value === 2 || value === undefined || value === false) {
+        toggleSystemMode.classList.add("active");
+    } else {
+        // -1 or 0 or anything else => light
+        toggleLightMode.classList.add("active");
+    }
+}
+
+settings.get("darkMode", function (value) {
+    updateDarkModeToggle(value);
 });
 
-darkModeNever.addEventListener("change", function (e) {
-    if (this.checked) {
-        settings.set("darkMode", -1);
-    }
+toggleLightMode.addEventListener("click", function () {
+    settings.set("darkMode", -1);
+    updateDarkModeToggle(-1);
 });
-darkModeNight.addEventListener("change", function (e) {
-    if (this.checked) {
-        settings.set("darkMode", 0);
-    }
+
+toggleDarkMode.addEventListener("click", function () {
+    settings.set("darkMode", 1);
+    updateDarkModeToggle(1);
 });
-darkModeAlways.addEventListener("change", function (e) {
-    if (this.checked) {
-        settings.set("darkMode", 1);
-    }
+
+toggleSystemMode.addEventListener("click", function () {
+    settings.set("darkMode", 2);
+    updateDarkModeToggle(2);
 });
-darkModeSystem.addEventListener("change", function (e) {
-    if (this.checked) {
-        settings.set("darkMode", 2);
-    }
+
+/* glass theme setting */
+var themeOptions = document.querySelectorAll("#theme-selector .theme-option");
+
+function updateThemeSelection(value) {
+    themeOptions.forEach(function (option) {
+        option.classList.remove("selected");
+        if (option.getAttribute("data-theme") === value) {
+            option.classList.add("selected");
+        }
+    });
+}
+
+settings.get("glassTheme", function (value) {
+    if (!value) value = "ocean";
+    updateThemeSelection(value);
+});
+
+themeOptions.forEach(function (option) {
+    option.addEventListener("click", function () {
+        var theme = this.getAttribute("data-theme");
+        settings.set("glassTheme", theme);
+        updateThemeSelection(theme);
+    });
 });
 
 /* site theme setting */

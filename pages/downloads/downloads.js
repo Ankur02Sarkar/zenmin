@@ -1,138 +1,151 @@
-const downloadsList = document.getElementById("downloads-list");
-const emptyState = document.getElementById("empty-state");
-const loadingState = document.getElementById("loading-state");
+var downloadsList = document.getElementById("downloads-list");
+var emptyState = document.getElementById("empty-state");
+var loadingState = document.getElementById("loading-state");
+var errorState = document.getElementById("error-state");
+var retryButton = document.getElementById("retry-button");
 
-function getFileIcon(filename) {
-    const ext = filename.split(".").pop().toLowerCase();
-    const iconMap = {
-        pdf: "carbon:pdf-file",
-        doc: "carbon:doc",
-        docx: "carbon:doc",
-        xls: "carbon:spreadsheet",
-        xlsx: "carbon:spreadsheet",
-        ppt: "carbon:ppt-file",
-        pptx: "carbon:ppt-file",
-        txt: "carbon:document",
+function formatFileSize(bytes) {
+    if (!bytes || bytes === 0) return "0 B";
+    var k = 1024;
+    var sizes = ["B", "KB", "MB", "GB", "TB"];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+function formatDate(timestamp) {
+    var date = new Date(timestamp);
+    var now = new Date();
+    var diff = now - date;
+
+    if (diff < 60000) return "Just now";
+    if (diff < 3600000) return "A few minutes ago";
+    if (diff < 86400000) return "Today";
+    if (diff < 172800000) return "Yesterday";
+    if (diff < 604800000) return "This week";
+    if (diff < 2592000000) return "This month";
+
+    return date.toLocaleDateString();
+}
+
+function getFileExtIcon(name) {
+    var ext = (name.split(".").pop() || "").toLowerCase();
+    var map = {
+        pdf: "carbon:document-pdf",
+        doc: "carbon:document",
+        docx: "carbon:document",
+        xls: "carbon:table-split",
+        xlsx: "carbon:table-split",
         jpg: "carbon:image",
         jpeg: "carbon:image",
         png: "carbon:image",
         gif: "carbon:image",
+        webp: "carbon:image",
         svg: "carbon:image",
-        mp3: "carbon:audio-file",
-        wav: "carbon:audio-file",
-        mp4: "carbon:video-file",
-        mov: "carbon:video-file",
-        avi: "carbon:video-file",
-        zip: "carbon:zip-file",
-        rar: "carbon:zip-file",
-        "7z": "carbon:zip-file",
-        exe: "carbon:exe-file",
-        dmg: "carbon:exe-file",
-        app: "carbon:app",
+        mp3: "carbon:music",
+        wav: "carbon:music",
+        flac: "carbon:music",
+        mp4: "carbon:video",
+        mov: "carbon:video",
+        avi: "carbon:video",
+        mkv: "carbon:video",
+        zip: "carbon:zip",
+        rar: "carbon:zip",
+        "7z": "carbon:zip",
+        gz: "carbon:zip",
+        tar: "carbon:zip",
+        exe: "carbon:application",
+        dmg: "carbon:application",
+        app: "carbon:application",
+        js: "carbon:code",
+        ts: "carbon:code",
+        py: "carbon:code",
+        html: "carbon:code",
+        css: "carbon:code",
+        txt: "carbon:document-blank",
+        md: "carbon:document-blank",
+        csv: "carbon:document-blank",
     };
-    return iconMap[ext] || "carbon:file";
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / k ** i).toFixed(2)) + " " + sizes[i];
-}
-
-function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000);
-    const now = new Date();
-    const diff = now - date;
-
-    if (diff < 60000) return l("timeRangeJustNow");
-    if (diff < 3600000) return l("timeRangeMinutes");
-    if (diff < 86400000) return l("timeRangeToday");
-    if (diff < 172800000) return l("timeRangeYesterday");
-    if (diff < 604800000) return l("timeRangeWeek");
-    if (diff < 2592000000) return l("timeRangeMonth");
-    if (diff < 31536000000) return l("timeRangeYear");
-    return l("timeRangeLongerAgo");
+    return map[ext] || "carbon:document-blank";
 }
 
 function renderDownloads(files) {
     downloadsList.innerHTML = "";
 
-    if (files.length === 0) {
+    if (!files || files.length === 0) {
         emptyState.hidden = false;
         return;
     }
 
     emptyState.hidden = true;
 
-    files.forEach((file) => {
-        const el = document.createElement("div");
+    files.forEach(function (file) {
+        var el = document.createElement("div");
         el.className = "download-item";
-        el.innerHTML =
-            '<div class="icon"><i class="i ' +
-            getFileIcon(file.name) +
-            '"></i></div>' +
-            '<div class="info">' +
-            '<div class="name">' +
-            file.name +
-            "</div>" +
-            '<div class="details">' +
-            formatFileSize(file.size) +
-            "</div>" +
-            "</div>" +
-            '<div class="time">' +
-            formatDate(file.mtime) +
-            "</div>";
-        el.addEventListener("click", () => {
-            window.open("file://" + file.path);
+
+        var iconEl = document.createElement("div");
+        iconEl.className = "download-icon";
+        iconEl.innerHTML =
+            '<i class="i ' + getFileExtIcon(file.name) + '"></i>';
+
+        var infoEl = document.createElement("div");
+        infoEl.className = "download-info";
+
+        var nameEl = document.createElement("div");
+        nameEl.className = "download-name";
+        nameEl.textContent = file.name;
+
+        var detailsEl = document.createElement("div");
+        detailsEl.className = "download-details";
+        detailsEl.textContent =
+            formatFileSize(file.size) + " \u2022 " + formatDate(file.mtime);
+
+        infoEl.appendChild(nameEl);
+        infoEl.appendChild(detailsEl);
+
+        el.appendChild(iconEl);
+        el.appendChild(infoEl);
+
+        el.addEventListener("click", function () {
+            postMessage({ message: "openPath", path: file.path });
         });
+
         downloadsList.appendChild(el);
     });
 }
 
 function loadDownloads() {
-    const downloadsPath = ipc.sendSync("get-downloads-directory");
+    loadingState.hidden = false;
+    emptyState.hidden = true;
+    errorState.hidden = true;
+    downloadsList.innerHTML = "";
 
-    if (!downloadsPath) {
-        loadingState.hidden = true;
-        emptyState.hidden = false;
-        return;
-    }
+    postMessage({ message: "getDownloadsListing" });
 
-    fetch("file://" + downloadsPath + "?t=" + Date.now())
-        .then((response) => response.text())
-        .then((html) => {
+    // timeout after 10 seconds
+    var timeout = setTimeout(function () {
+        if (!loadingState.hidden) {
             loadingState.hidden = true;
+            errorState.hidden = false;
+        }
+    }, 10000);
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            const links = doc.querySelectorAll("a");
-
-            const files = [];
-            links.forEach((link) => {
-                const href = link.getAttribute("href");
-                if (href && !href.endsWith("/") && !href.includes("?t=")) {
-                    const name = link.textContent || href.split("/").pop();
-                    if (name && name !== "Parent Directory" && name !== "../") {
-                        files.push({
-                            name: name,
-                            path: downloadsPath + "/" + name,
-                        });
-                    }
-                }
-            });
-
-            files.sort((a, b) => b.name.localeCompare(a.name));
-
-            renderDownloads(files);
-        })
-        .catch((err) => {
-            console.error("Error loading downloads:", err);
-            emptyState.hidden = false;
-        });
+    window._downloadsTimeout = timeout;
 }
 
-window.addEventListener("load", () => {
+window.addEventListener("message", function (e) {
+    if (e.data && e.data.message === "receiveDownloadsListing") {
+        clearTimeout(window._downloadsTimeout);
+        loadingState.hidden = true;
+        renderDownloads(e.data.files);
+    }
+});
+
+if (retryButton) {
+    retryButton.addEventListener("click", function () {
+        loadDownloads();
+    });
+}
+
+window.addEventListener("load", function () {
     loadDownloads();
 });
