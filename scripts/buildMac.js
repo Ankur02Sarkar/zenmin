@@ -7,6 +7,7 @@ const Arch = builder.Arch;
 
 const packageFile = require("./../package.json");
 const version = packageFile.version;
+const appName = packageFile.productName || packageFile.name;
 const platform = process.argv
     .find((arg) => arg.match("platform"))
     .split("=")[1];
@@ -24,7 +25,11 @@ require("./createPackage.js")("mac", { arch: toArch(platform) }).then(
     (packagePath) => {
         if (platform === "arm64" && process.env.CI !== "true") {
             execSync(
-                "codesign -s - -a arm64 -f --deep " + packagePath + "/Min.app",
+                "codesign -s - -a arm64 -f --deep " +
+                    packagePath +
+                    "/" +
+                    appName +
+                    ".app",
             );
         }
 
@@ -36,16 +41,38 @@ require("./createPackage.js")("mac", { arch: toArch(platform) }).then(
 
         /* create zip file */
 
-        var output = fs.createWriteStream(
-            "dist/app/zenmin-v" + version + "-mac-" + platform + ".zip",
-        );
-        var archive = archiver("zip", {
-            zlib: { level: 9 },
+        return new Promise((resolve, reject) => {
+            var output = fs.createWriteStream(
+                "dist/app/" +
+                    appName.toLowerCase() +
+                    "-v" +
+                    version +
+                    "-mac-" +
+                    platform +
+                    ".zip",
+            );
+            var archive = archiver("zip", {
+                zlib: { level: 9 },
+            });
+
+            output.on("close", () => {
+                console.log(
+                    "Zip created: " + archive.pointer() + " total bytes",
+                );
+                resolve();
+            });
+
+            archive.on("error", (err) => {
+                reject(err);
+            });
+
+            archive.directory(
+                path.resolve(packagePath, appName + ".app"),
+                appName + ".app",
+            );
+
+            archive.pipe(output);
+            archive.finalize();
         });
-
-        archive.directory(path.resolve(packagePath, "Min.app"), "Min.app");
-
-        archive.pipe(output);
-        archive.finalize();
     },
 );
