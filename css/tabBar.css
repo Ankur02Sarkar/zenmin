@@ -169,7 +169,7 @@ body.linux #menu-button {
     bottom: 0;
     left: 4px;
     right: 4px;
-    height: 2px;
+    height: 4px;
     border-radius: 2px 2px 0 0;
     background: var(--theme-primary, #0077b6);
     opacity: 0.8;
