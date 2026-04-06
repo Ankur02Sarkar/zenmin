@@ -1,5 +1,6 @@
-/* Third Eye - Preload script for DOM keyword scanning
-   Injected into every webview to scan page content for blocked keywords */
+/* Third Eye - Preload script for DOM keyword scanning and iframe blocking
+   Injected into every webview to scan page content for blocked keywords
+   and monitor iframes for blocked URLs */
 
 (function () {
     var electron = require("electron");
@@ -16,6 +17,7 @@
     var blockedKeywords = [];
     var whitelistedDomains = [];
     var observer = null;
+    var iframeObserver = null;
 
     function isCurrentPageWhitelisted() {
         try {
@@ -46,6 +48,159 @@
         return false;
     }
 
+    // Check if URL should be blocked (mirrors main process logic)
+    function isURLBlocked(url) {
+        try {
+            var normalized = url
+                .toLowerCase()
+                .replace(/^https?:\/\//, "")
+                .replace(/^www\./, "");
+            var domain = normalized.split("/")[0].split(":")[0];
+
+            // Check against blocked keywords in URL
+            for (var i = 0; i < blockedKeywords.length; i++) {
+                if (normalized.includes(blockedKeywords[i])) {
+                    return {
+                        blocked: true,
+                        reason: "keyword_url",
+                        match: blockedKeywords[i],
+                    };
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+        return { blocked: false };
+    }
+
+    // Check if iframe src should be blocked
+    function checkIframeSrc(src) {
+        if (!src || !src.startsWith("http")) {
+            return;
+        }
+
+        // Skip whitelisted domains
+        try {
+            var hostname = new URL(src).hostname
+                .toLowerCase()
+                .replace(/^www\./, "");
+            for (var i = 0; i < whitelistedDomains.length; i++) {
+                var entry = whitelistedDomains[i];
+                if (entry.startsWith("regex:")) {
+                    try {
+                        var pattern = entry.substring(6);
+                        var regex = new RegExp(pattern, "i");
+                        if (regex.test(hostname)) {
+                            return;
+                        }
+                    } catch (e) {
+                        // invalid regex
+                    }
+                } else {
+                    if (hostname === entry || hostname.endsWith("." + entry)) {
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            // invalid URL
+        }
+
+        var blockResult = isURLBlocked(src);
+        if (blockResult.blocked) {
+            ipc.send("thirdEye-iframeBlocked", {
+                iframeSrc: src,
+                reason: blockResult.reason,
+                match: blockResult.match,
+                pageUrl: window.location.href,
+            });
+        }
+    }
+
+    // Scan all existing iframes and check their sources
+    function scanIframes() {
+        if (!scanEnabled || isCurrentPageWhitelisted()) {
+            return;
+        }
+
+        try {
+            var iframes = document.querySelectorAll("iframe");
+            for (var i = 0; i < iframes.length; i++) {
+                var src = iframes[i].getAttribute("src");
+                if (src) {
+                    checkIframeSrc(src);
+                }
+            }
+        } catch (e) {
+            // Ignore errors - might be cross-origin restrictions
+        }
+    }
+
+    // Start observing iframes for new ones added
+    function startIframeObserver() {
+        if (iframeObserver) {
+            return;
+        }
+
+        function attachObserver() {
+            if (!document.body) {
+                setTimeout(attachObserver, 100);
+                return;
+            }
+
+            iframeObserver = new MutationObserver(function (mutations) {
+                if (!scanEnabled || isCurrentPageWhitelisted()) {
+                    return;
+                }
+
+                mutations.forEach(function (mutation) {
+                    if (mutation.addedNodes) {
+                        mutation.addedNodes.forEach(function (node) {
+                            // Check if the added node is an iframe
+                            if (node.nodeName === "IFRAME") {
+                                var src = node.getAttribute("src");
+                                if (src) {
+                                    checkIframeSrc(src);
+                                }
+                            }
+                            // Check if added node contains iframes
+                            if (node.querySelectorAll) {
+                                var iframes = node.querySelectorAll("iframe");
+                                iframes.forEach(function (iframe) {
+                                    var src = iframe.getAttribute("src");
+                                    if (src) {
+                                        checkIframeSrc(src);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            iframeObserver.observe(document.body, {
+                childList: true,
+                subtree: true,
+            });
+        }
+
+        if (
+            document.readyState === "complete" ||
+            document.readyState === "interactive"
+        ) {
+            attachObserver();
+        } else {
+            window.addEventListener("DOMContentLoaded", attachObserver);
+        }
+    }
+
+    function stopIframeObserver() {
+        if (iframeObserver) {
+            iframeObserver.disconnect();
+            iframeObserver = null;
+        }
+    }
+
     // Fetch blocking rules from main process
     function fetchRules() {
         ipc.invoke("thirdEye-getBlockingRules")
@@ -60,19 +215,23 @@
                         document.readyState === "interactive"
                     ) {
                         debouncedScan();
+                        scanIframes();
                     } else {
                         window.addEventListener(
                             "DOMContentLoaded",
                             function () {
                                 debouncedScan();
+                                scanIframes();
                             },
                         );
                     }
                     startObserving();
+                    startIframeObserver();
                 } else {
                     scanEnabled = false;
                     blockedKeywords = [];
                     stopObserving();
+                    stopIframeObserver();
                 }
             })
             .catch(function () {
@@ -183,12 +342,15 @@
             blockedKeywords = rules.keywords;
             whitelistedDomains = rules.whitelist || [];
             debouncedScan();
+            scanIframes();
             startObserving();
+            startIframeObserver();
         } else {
             scanEnabled = false;
             blockedKeywords = [];
             whitelistedDomains = [];
             stopObserving();
+            stopIframeObserver();
         }
     });
 

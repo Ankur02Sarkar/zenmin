@@ -399,6 +399,80 @@ app.once("ready", async function () {
         }
     }, 30 * 1000);
 
+    // Register webRequest handler for blocking ALL requests (including iframes)
+    function handleThirdEyeRequest(details) {
+        if (!isTimerActive()) {
+            return {};
+        }
+
+        var url = details.url;
+
+        // Skip internal pages
+        if (
+            url.startsWith("zenmin://") ||
+            url.startsWith("about:") ||
+            url.startsWith("chrome://") ||
+            url.startsWith("data:")
+        ) {
+            return {};
+        }
+
+        // Skip whitelisted domains
+        if (isWhitelisted(url)) {
+            return {};
+        }
+
+        // Check if URL should be blocked
+        var blockResult = shouldBlockURL(url);
+        if (blockResult.blocked) {
+            // Get the tab ID from the request
+            var tabId = details.tabId;
+
+            // Try to notify the renderer to show blocked page
+            if (tabId && tabId !== -1) {
+                try {
+                    // Send a message to the webview to show blocked page
+                    webContents.fromTabID(tabId).then(function (wc) {
+                        if (wc) {
+                            var blockedURL =
+                                "zenmin://app/pages/thirdeye/blocked.html" +
+                                "?url=" +
+                                encodeURIComponent(url) +
+                                "&reason=" +
+                                encodeURIComponent(blockResult.reason) +
+                                "&match=" +
+                                encodeURIComponent(blockResult.match || "");
+
+                            if (thirdEyeData.timerExpiry) {
+                                blockedURL +=
+                                    "&expiry=" +
+                                    encodeURIComponent(
+                                        thirdEyeData.timerExpiry,
+                                    );
+                            }
+
+                            wc.send("thirdEye-showBlockedPage", blockedURL);
+                        }
+                    });
+                } catch (e) {
+                    // Ignore errors
+                }
+            }
+
+            return { cancel: true };
+        }
+
+        return {};
+    }
+
+    // Register webRequest for all sessions
+    app.on("session-created", function (ses) {
+        ses.webRequest.onBeforeRequest(handleThirdEyeRequest);
+    });
+
+    // Also register for default session
+    session.defaultSession.webRequest.onBeforeRequest(handleThirdEyeRequest);
+
     // Get Third Eye data
     ipc.handle("thirdEye-getData", function () {
         return getPublicData();

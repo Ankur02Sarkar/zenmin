@@ -282,6 +282,18 @@
       document.getElementById("blocked-url").textContent = blockedUrl;
 
       // Show reason for blocking
+      function getReasonTypeLabel(reasonType) {
+        var typeLabels = {
+          url: "URL Block",
+          domain: "Domain Block",
+          keyword_url: "Keyword in URL",
+          keyword_content: "Keyword in Page",
+          adult: "Adult Site Prevention",
+          iframe_block: "Blocked Content (Iframe)",
+        };
+        return typeLabels[reasonType] || "Blocked";
+      }
+
       function getReasonText(reasonType, matchText) {
         var reasonTexts = {
           url: "This specific URL is in your blocklist",
@@ -293,19 +305,11 @@
             "The page content contains a blocked keyword: " +
             (matchText ? '"' + matchText + '"' : ""),
           adult: "This website is blocked by Adult Site Prevention",
+          iframe_block:
+            "This embedded content contains a blocked URL: " +
+            (matchText ? '"' + matchText + '"' : ""),
         };
         return reasonTexts[reasonType] || "Blocked by Third Eye";
-      }
-
-      function getReasonTypeLabel(reasonType) {
-        var typeLabels = {
-          url: "URL Block",
-          domain: "Domain Block",
-          keyword_url: "Keyword in URL",
-          keyword_content: "Keyword in Page",
-          adult: "Adult Site Prevention",
-        };
-        return typeLabels[reasonType] || "Blocked";
       }
 
       if (reason) {

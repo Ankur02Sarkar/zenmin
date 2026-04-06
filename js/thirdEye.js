@@ -74,6 +74,26 @@ var thirdEye = {
             thirdEye.cachedData = data;
         });
 
+        // Listen for blocked page request from webRequest handler (main process)
+        ipc.on("thirdEye-showBlockedPage", function (event, blockedURL) {
+            // Get the webContents that sent this message
+            var wc = event.sender;
+            // Find the tab associated with this webContents
+            for (var i = 0; i < tasks.length; i++) {
+                for (var j = 0; j < tasks[i].tabs.length; j++) {
+                    var tab = tasks[i].tabs[j];
+                    try {
+                        if (webviews.getWebContents(tab.id) === wc) {
+                            webviews.update(tab.id, blockedURL);
+                            return;
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+            }
+        });
+
         // Intercept navigation events
         webviews.bindEvent(
             "did-start-navigation",
@@ -107,6 +127,30 @@ var thirdEye = {
                     "&reason=keyword_content" +
                     "&match=" +
                     encodeURIComponent(data.keyword);
+
+                if (thirdEye.cachedData && thirdEye.cachedData.timerExpiry) {
+                    blockedURL +=
+                        "&expiry=" +
+                        encodeURIComponent(thirdEye.cachedData.timerExpiry);
+                }
+
+                webviews.update(tabId, blockedURL);
+            }
+        });
+
+        // Listen for iframe blocking from preload
+        webviews.bindIPC("thirdEye-iframeBlocked", function (tabId, args) {
+            var data = args[0];
+            if (data && data.iframeSrc) {
+                // Show blocked page for the iframe source
+                var blockedURL =
+                    "zenmin://app/pages/thirdeye/blocked.html" +
+                    "?url=" +
+                    encodeURIComponent(data.iframeSrc) +
+                    "&reason=" +
+                    encodeURIComponent(data.reason || "iframe_block") +
+                    "&match=" +
+                    encodeURIComponent(data.match || "");
 
                 if (thirdEye.cachedData && thirdEye.cachedData.timerExpiry) {
                     blockedURL +=
