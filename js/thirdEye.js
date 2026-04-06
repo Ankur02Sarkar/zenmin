@@ -23,7 +23,12 @@ var thirdEye = {
                     try {
                         var pattern = entry.substring(6);
                         var regex = new RegExp(pattern, "i");
-                        if (regex.test(domain)) {
+                        // Test against both domain and full URL
+                        if (
+                            regex.test(domain) ||
+                            regex.test(normalized) ||
+                            regex.test(url)
+                        ) {
                             return true;
                         }
                     } catch (e) {

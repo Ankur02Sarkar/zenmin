@@ -24,13 +24,15 @@
             var hostname = window.location.hostname
                 .toLowerCase()
                 .replace(/^www\./, "");
+            var fullUrl = window.location.href.toLowerCase();
             for (var i = 0; i < whitelistedDomains.length; i++) {
                 var entry = whitelistedDomains[i];
                 if (entry.startsWith("regex:")) {
                     try {
                         var pattern = entry.substring(6);
                         var regex = new RegExp(pattern, "i");
-                        if (regex.test(hostname)) {
+                        // Test against hostname and full URL
+                        if (regex.test(hostname) || regex.test(fullUrl)) {
                             return true;
                         }
                     } catch (e) {
@@ -84,13 +86,15 @@
             var hostname = new URL(src).hostname
                 .toLowerCase()
                 .replace(/^www\./, "");
+            var fullSrc = src.toLowerCase();
             for (var i = 0; i < whitelistedDomains.length; i++) {
                 var entry = whitelistedDomains[i];
                 if (entry.startsWith("regex:")) {
                     try {
                         var pattern = entry.substring(6);
                         var regex = new RegExp(pattern, "i");
-                        if (regex.test(hostname)) {
+                        // Test against hostname and full URL
+                        if (regex.test(hostname) || regex.test(fullSrc)) {
                             return;
                         }
                     } catch (e) {

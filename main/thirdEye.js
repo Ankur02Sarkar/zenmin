@@ -25,13 +25,19 @@ function loadWhitelist() {
 
 function isWhitelisted(url) {
     var domain = extractDomain(url);
+    var normalizedUrl = normalizeURL(url);
     for (var i = 0; i < thirdEyeWhitelist.length; i++) {
         var wlEntry = thirdEyeWhitelist[i];
         if (wlEntry.startsWith("regex:")) {
             try {
                 var pattern = wlEntry.substring(6);
                 var regex = new RegExp(pattern, "i");
-                if (regex.test(domain)) {
+                // Test against both domain and full URL
+                if (
+                    regex.test(domain) ||
+                    regex.test(normalizedUrl) ||
+                    regex.test(url)
+                ) {
                     return true;
                 }
             } catch (e) {

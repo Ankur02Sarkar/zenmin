@@ -29,6 +29,7 @@
         "scholar.google.com",
         "analytics.google.com",
         "webmasters.google.com",
-        "workspace.google.com"
+        "workspace.google.com",
+        "regex:www\\.google\\.com/recaptcha.*"
     ]
 }
