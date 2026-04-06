@@ -186,6 +186,26 @@ function removeTrackingParams(url) {
 function handleRequest(details, callback) {
     /* eslint-disable standard/no-callback-literal */
 
+    // Third Eye: block requests to blocked URLs (including iframes/subframes)
+    // This runs before all other checks so it catches every resource type
+    if (
+        (details.url.startsWith("http://") ||
+            details.url.startsWith("https://")) &&
+        typeof shouldBlockURL === "function" &&
+        typeof isWhitelisted === "function"
+    ) {
+        if (!isWhitelisted(details.url)) {
+            var thirdEyeResult = shouldBlockURL(details.url);
+            if (thirdEyeResult && thirdEyeResult.blocked) {
+                callback({
+                    cancel: true,
+                    requestHeaders: details.requestHeaders,
+                });
+                return;
+            }
+        }
+    }
+
     // webContentsId may not exist if this request is a mainFrame or subframe
     let domain;
     if (details.webContentsId) {

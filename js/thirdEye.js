@@ -74,26 +74,6 @@ var thirdEye = {
             thirdEye.cachedData = data;
         });
 
-        // Listen for blocked page request from webRequest handler (main process)
-        ipc.on("thirdEye-showBlockedPage", function (event, blockedURL) {
-            // Get the webContents that sent this message
-            var wc = event.sender;
-            // Find the tab associated with this webContents
-            for (var i = 0; i < tasks.length; i++) {
-                for (var j = 0; j < tasks[i].tabs.length; j++) {
-                    var tab = tasks[i].tabs[j];
-                    try {
-                        if (webviews.getWebContents(tab.id) === wc) {
-                            webviews.update(tab.id, blockedURL);
-                            return;
-                        }
-                    } catch (e) {
-                        // ignore
-                    }
-                }
-            }
-        });
-
         // Intercept navigation events
         webviews.bindEvent(
             "did-start-navigation",
@@ -108,6 +88,9 @@ var thirdEye = {
                     url.startsWith("data:")
                 )
                     return;
+
+                // Skip whitelisted domains
+                if (thirdEye.isWhitelisted(url)) return;
 
                 thirdEye.checkAndBlock(tabId, url);
             },
