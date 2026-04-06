@@ -8,6 +8,27 @@
         "linkedin.com",
         "github.com",
         "youtube.com",
-        "google.com"
+        "accounts.google.com",
+        "docs.google.com",
+        "drive.google.com",
+        "mail.google.com",
+        "calendar.google.com",
+        "meet.google.com",
+        "chat.google.com",
+        "contacts.google.com",
+        "myaccount.google.com",
+        "keep.google.com",
+        "tasks.google.com",
+        "photos.google.com",
+        "play.google.com",
+        "wallet.google.com",
+        "support.google.com",
+        "news.google.com",
+        "translate.google.com",
+        "books.google.com",
+        "scholar.google.com",
+        "analytics.google.com",
+        "webmasters.google.com",
+        "workspace.google.com"
     ]
 }
