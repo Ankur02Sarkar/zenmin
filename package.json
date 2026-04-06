@@ -75,6 +75,8 @@
         "buildWindows": "npm run build && node ./scripts/buildWindows.js",
         "buildMacIntel": "npm run build && node ./scripts/buildMac.js --platform=x86",
         "buildMacArm": "npm run build && node ./scripts/buildMac.js --platform=arm64",
+        "installMacIntel": "node ./scripts/installMac.js --platform=x86",
+        "installMacArm": "node ./scripts/installMac.js --platform=arm64",
         "buildDebian": "npm run build && node ./scripts/buildDebian.js --platform=amd64",
         "buildRedhat": "npm run build && node ./scripts/buildRedhat.js",
         "buildAll": "npm run buildWindows && npm run buildMacIntel && npm run buildMacArm && npm run buildDebian && npm run buildRedhat && npm run buildAppImage",
