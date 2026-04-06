@@ -119,7 +119,14 @@
 
     // Scan all existing iframes and check their sources
     function scanIframes() {
-        if (!scanEnabled || isCurrentPageWhitelisted()) {
+        if (!scanEnabled || whitelistedDomains.length === 0) {
+            return;
+        }
+
+        // Even if current page is whitelisted, still check iframes
+        // because iframe src might not be whitelisted
+        if (isCurrentPageWhitelisted()) {
+            // Current page is whitelisted, skip scanning but still allow iframe checks
             return;
         }
 
@@ -149,9 +156,12 @@
             }
 
             iframeObserver = new MutationObserver(function (mutations) {
-                if (!scanEnabled || isCurrentPageWhitelisted()) {
+                if (!scanEnabled || whitelistedDomains.length === 0) {
                     return;
                 }
+
+                // Even if current page is whitelisted, still check iframes
+                // because iframe src might not be whitelisted
 
                 mutations.forEach(function (mutation) {
                     if (mutation.addedNodes) {
