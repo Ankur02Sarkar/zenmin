@@ -301,7 +301,7 @@ siteThemeCheckbox.addEventListener("change", function (e) {
 
 var startupSettingInput = document.getElementById("startup-options");
 
-settings.get("startupTabOption", (value = 2) => {
+settings.get("startupTabOption", (value = 1) => {
     startupSettingInput.value = value;
 });
 
