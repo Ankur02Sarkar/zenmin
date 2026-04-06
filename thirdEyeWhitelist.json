@@ -4,6 +4,9 @@
         "raphacure.com",
         "regex:localhost(:[0-9]+)?(/.*)?",
         "regex:127\\.0\\.0\\.1(:[0-9]+)?(/.*)?",
-        "regex:0\\.0\\.0\\.0(:[0-9]+)?(/.*)?"
+        "regex:0\\.0\\.0\\.0(:[0-9]+)?(/.*)?",
+        "linkedin.com",
+        "github.com",
+        "youtube.com"
     ]
 }
