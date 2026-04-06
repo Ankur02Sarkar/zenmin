@@ -7,6 +7,7 @@
         "regex:0\\.0\\.0\\.0(:[0-9]+)?(/.*)?",
         "linkedin.com",
         "github.com",
-        "youtube.com"
+        "youtube.com",
+        "google.com"
     ]
 }
