@@ -1,0 +1,9 @@
+{
+    "description": "Third Eye Whitelist - Websites listed here will bypass all Third Eye blocking checks (URL, keyword, and adult site prevention). Add domains without protocol or www prefix. Use regex: prefix for regex patterns (e.g., regex:localhost.* for localhost and subdomains).",
+    "whitelist": [
+        "raphacure.com",
+        "regex:localhost(:[0-9]+)?(/.*)?",
+        "regex:127\\.0\\.0\\.1(:[0-9]+)?(/.*)?",
+        "regex:0\\.0\\.0\\.0(:[0-9]+)?(/.*)?"
+    ]
+}

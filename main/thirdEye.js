@@ -4,6 +4,47 @@
    are all available as globals from the concatenated main build */
 
 var thirdEyeDataPath = path.join(userDataPath, "thirdEyeData.json");
+var thirdEyeWhitelistPath = path.join(__dirname, "thirdEyeWhitelist.json");
+
+var thirdEyeWhitelist = [];
+
+function loadWhitelist() {
+    try {
+        var raw = fs.readFileSync(thirdEyeWhitelistPath, "utf-8");
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.whitelist)) {
+            thirdEyeWhitelist = parsed.whitelist.map(function (domain) {
+                return domain.toLowerCase().trim();
+            });
+        }
+    } catch (e) {
+        console.error("Third Eye: Failed to load whitelist:", e);
+        thirdEyeWhitelist = [];
+    }
+}
+
+function isWhitelisted(url) {
+    var domain = extractDomain(url);
+    for (var i = 0; i < thirdEyeWhitelist.length; i++) {
+        var wlEntry = thirdEyeWhitelist[i];
+        if (wlEntry.startsWith("regex:")) {
+            try {
+                var pattern = wlEntry.substring(6);
+                var regex = new RegExp(pattern, "i");
+                if (regex.test(domain)) {
+                    return true;
+                }
+            } catch (e) {
+                // invalid regex, skip
+            }
+        } else {
+            if (domain === wlEntry || domain.endsWith("." + wlEntry)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 var thirdEyeData = {
     enabled: false,
@@ -244,6 +285,7 @@ function getPublicData() {
         blockedKeywords: thirdEyeData.blockedKeywords,
         adultSitePrevention: thirdEyeData.adultSitePrevention,
         adultDomainsList: adultDomainsList,
+        whitelist: thirdEyeWhitelist,
         timerActive: isTimerActive(),
         currentTime: getCurrentTime() ? getCurrentTime().toISOString() : null,
     };
@@ -274,6 +316,11 @@ function extractDomain(url) {
 // Check if a URL should be blocked
 function shouldBlockURL(url) {
     if (!isTimerActive()) {
+        return { blocked: false };
+    }
+
+    // Skip blocking for whitelisted domains
+    if (isWhitelisted(url)) {
         return { blocked: false };
     }
 
@@ -331,6 +378,7 @@ function shouldBlockURL(url) {
 
 // IPC Handlers
 app.once("ready", async function () {
+    loadWhitelist();
     loadData();
 
     // Fetch external time on startup
@@ -543,8 +591,13 @@ app.once("ready", async function () {
     });
 
     // Check keyword match in DOM content (called from preload)
-    ipc.handle("thirdEye-checkContent", function (event, textContent) {
+    ipc.handle("thirdEye-checkContent", function (event, textContent, pageURL) {
         if (!isTimerActive()) {
+            return { blocked: false };
+        }
+
+        // Skip content scanning for whitelisted domains
+        if (pageURL && isWhitelisted(pageURL)) {
             return { blocked: false };
         }
 
@@ -566,7 +619,7 @@ app.once("ready", async function () {
     // Get blocking rules for preload script (lightweight check data)
     ipc.handle("thirdEye-getBlockingRules", function () {
         if (!isTimerActive()) {
-            return { active: false, keywords: [] };
+            return { active: false, keywords: [], whitelist: [] };
         }
         return {
             active: true,
@@ -577,6 +630,7 @@ app.once("ready", async function () {
                 .map(function (k) {
                     return k.keyword.toLowerCase();
                 }),
+            whitelist: thirdEyeWhitelist,
         };
     });
 });

@@ -7,6 +7,40 @@ var urlParser = require("util/urlParser.js");
 var thirdEye = {
     cachedData: null,
 
+    isWhitelisted: function (url) {
+        if (!thirdEye.cachedData || !thirdEye.cachedData.whitelist)
+            return false;
+        try {
+            var normalized = url
+                .toLowerCase()
+                .replace(/^https?:\/\//, "")
+                .replace(/^www\./, "");
+            var domain = normalized.split("/")[0].split(":")[0];
+            var whitelist = thirdEye.cachedData.whitelist;
+            for (var i = 0; i < whitelist.length; i++) {
+                var entry = whitelist[i];
+                if (entry.startsWith("regex:")) {
+                    try {
+                        var pattern = entry.substring(6);
+                        var regex = new RegExp(pattern, "i");
+                        if (regex.test(domain)) {
+                            return true;
+                        }
+                    } catch (e) {
+                        // invalid regex, skip
+                    }
+                } else {
+                    if (domain === entry || domain.endsWith("." + entry)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+        return false;
+    },
+
     pushRulesToViews: function () {
         // Push updated blocking rules to all non-internal webviews
         ipc.invoke("thirdEye-getBlockingRules").then(function (rules) {
@@ -63,6 +97,9 @@ var thirdEye = {
         webviews.bindIPC("thirdEye-contentBlocked", function (tabId, args) {
             var data = args[0];
             if (data && data.url && data.keyword) {
+                // Skip blocking for whitelisted domains
+                if (thirdEye.isWhitelisted(data.url)) return;
+
                 var blockedURL =
                     "zenmin://app/pages/thirdeye/blocked.html" +
                     "?url=" +
